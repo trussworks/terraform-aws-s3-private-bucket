@@ -1,6 +1,10 @@
 Creates a private, versioned S3 bucket with good defaults.
 
-The following lifecycle policies are set:
+The following policy rules are set:
+
+* Deny uploading public objects.
+
+The following lifecycle rules are set:
 
 * Incomplete multipart uploads are deleted after 14 days.
 * Expired object delete markers are deleted.

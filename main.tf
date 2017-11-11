@@ -1,7 +1,11 @@
 /**
  * Creates a private, versioned S3 bucket with good defaults.
  *
- * The following lifecycle policies are set:
+ * The following policy rules are set:
+ *
+ * * Deny uploading public objects.
+ *
+ * The following lifecycle rules are set:
  *
  * * Incomplete multipart uploads are deleted after 14 days.
  * * Expired object delete markers are deleted.
@@ -19,6 +23,33 @@
 resource "aws_s3_bucket" "versioning_bucket" {
   bucket = "${var.bucket}"
   acl    = "private"
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "PutObjPolicy",
+  "Statement": [
+    {
+      "Sid": "ensure-private-read-write",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": "arn:aws:s3:::${var.bucket}/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": [
+            "public-read",
+            "public-read-write"
+          ]
+        }
+      }
+    }
+  ]
+}
+POLICY
 
   versioning {
     enabled = true
