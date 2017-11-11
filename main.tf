@@ -1,5 +1,12 @@
 /**
- * Creates an S3 bucket with good default policies.
+ * Creates a private, versioned S3 bucket with good defaults.
+ *
+ * The following lifecycle policies are set:
+ *
+ * * Incomplete multipart uploads are deleted after 14 days.
+ * * Expired object delete markers are deleted.
+ * * Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
+ * * Noncurrent object versions expire after 365 days.
  *
  * Usage:
  *
@@ -11,7 +18,7 @@
 
 resource "aws_s3_bucket" "versioning_bucket" {
   bucket = "${var.bucket}"
-  acl    = "${var.acl}"
+  acl    = "private"
 
   versioning {
     enabled = true

@@ -1,4 +1,11 @@
-Creates an S3 bucket with good default policies.
+Creates a private, versioned S3 bucket with good defaults.
+
+The following lifecycle policies are set:
+
+* Incomplete multipart uploads are deleted after 14 days.
+* Expired object delete markers are deleted.
+* Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
+* Noncurrent object versions expire after 365 days.
 
 Usage:
 
@@ -12,7 +19,6 @@ Usage:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| acl | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. | string | `private` | no |
 | bucket | The name of the bucket. If omitted, Terraform will assign a random, unique name. | string | - | yes |
 | tags | A mapping of tags to assign to the bucket. | string | `<map>` | no |
 
