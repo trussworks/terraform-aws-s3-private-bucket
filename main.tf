@@ -26,36 +26,18 @@ locals {
   bucket_name = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
 }
 
+data "template_file" "policy" {
+  template = "${file("${path.module}/policy.tpl")}"
+
+  vars {
+    bucket = "${local.bucket_name}"
+  }
+}
+
 resource "aws_s3_bucket" "private_bucket" {
   bucket = "${local.bucket_name}"
   acl    = "private"
-
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Id": "PutObjPolicy",
-  "Statement": [
-    {
-      "Sid": "ensure-private-read-write",
-      "Effect": "Deny",
-      "Principal": "*",
-      "Action": [
-        "s3:PutObject",
-        "s3:PutObjectAcl"
-      ],
-      "Resource": "arn:aws:s3:::${local.bucket_name}/*",
-      "Condition": {
-        "StringEquals": {
-          "s3:x-amz-acl": [
-            "public-read",
-            "public-read-write"
-          ]
-        }
-      }
-    }
-  ]
-}
-POLICY
+  policy = "${data.template_file.policy.rendered}"
 
   versioning {
     enabled = true
