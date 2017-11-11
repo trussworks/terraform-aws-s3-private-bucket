@@ -12,7 +12,7 @@
  * * Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
  * * Noncurrent object versions expire after 365 days.
  *
- * Usage:
+ * ## Usage
  *
  *     module "aws-s3-bucket" {
  *       source = "github.com/trussworks/terraform-aws-s3-bucket"
@@ -20,8 +20,14 @@
  *     }
  */
 
-resource "aws_s3_bucket" "versioning_bucket" {
-  bucket = "${var.bucket}"
+data "aws_iam_account_alias" "current" {}
+
+locals {
+  bucket_name = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
+}
+
+resource "aws_s3_bucket" "private_bucket" {
+  bucket = "${local.bucket_name}"
   acl    = "private"
 
   policy = <<POLICY
@@ -37,7 +43,7 @@ resource "aws_s3_bucket" "versioning_bucket" {
         "s3:PutObject",
         "s3:PutObjectAcl"
       ],
-      "Resource": "arn:aws:s3:::${var.bucket}/*",
+      "Resource": "arn:aws:s3:::${local.bucket_name}/*",
       "Condition": {
         "StringEquals": {
           "s3:x-amz-acl": [

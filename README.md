@@ -11,7 +11,7 @@ The following lifecycle rules are set:
 * Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
 * Noncurrent object versions expire after 365 days.
 
-Usage:
+## Usage
 
     module "aws-s3-bucket" {
       source = "github.com/trussworks/terraform-aws-s3-bucket"
@@ -23,7 +23,7 @@ Usage:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| bucket | The name of the bucket. If omitted, Terraform will assign a random, unique name. | string | - | yes |
+| bucket | The name of the bucket. It will be prefixed with the AWS account alias. | string | - | yes |
 | tags | A mapping of tags to assign to the bucket. | string | `<map>` | no |
 
 ## Outputs
