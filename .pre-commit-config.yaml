@@ -17,7 +17,7 @@ repos:
     -   id: terraform_fmt
     -   id: terraform_validate
 
--   repo: git://github.com/trussworks/markdownlint-cli
-    sha: v0.3.1-truss1
+-   repo: git://github.com/igorshubovych/markdownlint-cli
+    sha: v0.5.0
     hooks:
     -   id: markdownlint
