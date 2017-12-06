@@ -14,8 +14,8 @@ The following lifecycle rules are set:
 ## Usage
 
     module "aws-s3-bucket" {
-      source = "github.com/trussworks/terraform-aws-s3-bucket"
-      bucket = "my-versioning-bucket"
+      source = "trussworks/s3-private-bucket/aws"
+      bucket = "my-bucket-name"
     }
 
 
