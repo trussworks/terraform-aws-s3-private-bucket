@@ -19,6 +19,20 @@
           ]
         }
       }
+    },
+    {
+      "Sid": "ensure-encrypted",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::${bucket}/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "AES256"
+        }
+      }
     }
   ]
 }

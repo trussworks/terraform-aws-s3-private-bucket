@@ -3,6 +3,7 @@ Creates a private, versioned S3 bucket with good defaults.
 The following policy rules are set:
 
 * Deny uploading public objects.
+* Deny uploading objects without server-side encryption.
 
 The following lifecycle rules are set:
 
