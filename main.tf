@@ -23,19 +23,19 @@
 data "aws_iam_account_alias" "current" {}
 
 locals {
-  bucket_name = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
+  bucket_id = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
 }
 
 data "template_file" "policy" {
   template = "${file("${path.module}/policy.tpl")}"
 
   vars {
-    bucket = "${local.bucket_name}"
+    bucket = "${local.bucket_id}"
   }
 }
 
 resource "aws_s3_bucket" "private_bucket" {
-  bucket = "${local.bucket_name}"
+  bucket = "${local.bucket_id}"
   acl    = "private"
   policy = "${data.template_file.policy.rendered}"
 
