@@ -17,6 +17,11 @@
  *     module "aws-s3-bucket" {
  *       source = "trussworks/s3-private-bucket/aws"
  *       bucket = "my-bucket-name"
+ *
+ *       tags {
+ *         Name        = "My bucket"
+ *         Environment = "Dev"
+ *       }
  *     }
  */
 
@@ -38,6 +43,7 @@ resource "aws_s3_bucket" "private_bucket" {
   bucket = "${local.bucket_id}"
   acl    = "private"
   policy = "${data.template_file.policy.rendered}"
+  tags   = "${var.tags}"
 
   versioning {
     enabled = true
