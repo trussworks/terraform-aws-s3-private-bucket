@@ -31,5 +31,5 @@ The following lifecycle rules are set:
 | Name | Description |
 |------|-------------|
 | arn | The ARN of the bucket. Will be of format arn:aws:s3:::bucketname. |
-| bucket | The name of the bucket. |
+| id | The name of the bucket. |
 

@@ -1,4 +1,4 @@
-output "bucket" {
+output "id" {
   description = "The name of the bucket."
   value       = "${aws_s3_bucket.private_bucket.id}"
 }
