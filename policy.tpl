@@ -1,6 +1,6 @@
 {
   "Version": "2012-10-17",
-  "Id": "PutObjPolicy",
+  "Id": "trussworks-aws-s3-private-bucket",
   "Statement": [
     {
       "Sid": "ensure-private-read-write",
@@ -17,20 +17,6 @@
             "public-read",
             "public-read-write"
           ]
-        }
-      }
-    },
-    {
-      "Sid": "ensure-encrypted",
-      "Effect": "Deny",
-      "Principal": "*",
-      "Action": [
-        "s3:PutObject"
-      ],
-      "Resource": "arn:aws:s3:::${bucket}/*",
-      "Condition": {
-        "StringNotEquals": {
-          "s3:x-amz-server-side-encryption": "AES256"
         }
       }
     }
