@@ -2,13 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: trussworks/circleci-docker-primary:fc4a1e9f020122de106b5c65f11de6a2771e093f
+      - image: trussworks/circleci-docker-primary:49e04ed364985ca83145d9336b0cb82ba599ebe0
     steps:
       - checkout
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-            - pre-commit-dot-cache
       - run:
           name: Run pre-commit tests
           command: pre-commit run --all-files
