@@ -29,7 +29,8 @@ The following lifecycle rules are set:
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | bucket | The name of the bucket. It will be prefixed with the AWS account alias. | string | - | yes |
-| tags | A mapping of tags to assign to the bucket. | string | `<map>` | no |
+| custom_bucket_policy | JSON formatted bucket policy to attach to the bucket. | string | `` | no |
+| tags | A mapping of tags to assign to the bucket. | map | `<map>` | no |
 
 ## Outputs
 

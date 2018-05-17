@@ -31,18 +31,42 @@ locals {
   bucket_id = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
 }
 
-data "template_file" "policy" {
-  template = "${file("${path.module}/policy.tpl")}"
+data "aws_iam_policy_document" "policy" {
+  source_json = "${var.custom_bucket_policy}"
 
-  vars {
-    bucket = "${local.bucket_id}"
+  statement {
+    sid = "ensure-private-read-write"
+
+    actions = [
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+    ]
+
+    effect = "Deny"
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    resources = ["arn:aws:s3:::${local.bucket_id}/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+
+      values = [
+        "public-read",
+        "public-read-write",
+      ]
+    }
   }
 }
 
 resource "aws_s3_bucket" "private_bucket" {
   bucket = "${local.bucket_id}"
   acl    = "private"
-  policy = "${data.template_file.policy.rendered}"
+  policy = "${data.aws_iam_policy_document.policy.json}"
   tags   = "${var.tags}"
 
   versioning {
