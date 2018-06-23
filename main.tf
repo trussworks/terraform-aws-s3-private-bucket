@@ -1,5 +1,10 @@
 /**
- * Creates a private, encrypted, versioned S3 bucket with good defaults.
+ * Creates a private S3 bucket with good defaults:
+ *
+ * * Private only objects
+ * * Encryption
+ * * Versioning
+ * * Access logging
  *
  * The following policy rules are set:
  *
@@ -15,8 +20,9 @@
  * ## Usage
  *
  *     module "aws-s3-bucket" {
- *       source = "trussworks/s3-private-bucket/aws"
- *       bucket = "my-bucket-name"
+ *       source         = "trussworks/s3-private-bucket/aws"
+ *       bucket         = "my-bucket-name"
+ *       logging_bucket = "my-aws-logs"
  *
  *       tags {
  *         Name        = "My bucket"
@@ -90,6 +96,11 @@ resource "aws_s3_bucket" "private_bucket" {
     noncurrent_version_expiration {
       days = 365
     }
+  }
+
+  logging {
+    target_bucket = "${var.logging_bucket}"
+    target_prefix = "s3/${local.bucket_id}/"
   }
 
   server_side_encryption_configuration {
