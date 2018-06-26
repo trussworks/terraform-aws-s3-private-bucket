@@ -9,6 +9,11 @@ variable "custom_bucket_policy" {
   default     = ""
 }
 
+variable "logging_bucket" {
+  description = "The S3 bucket to send S3 access logs."
+  type        = "string"
+}
+
 variable "tags" {
   description = "A mapping of tags to assign to the bucket."
   default     = {}
