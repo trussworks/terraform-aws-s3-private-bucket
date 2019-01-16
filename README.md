@@ -8,6 +8,12 @@ Creates a private S3 bucket with good defaults:
 The following policy rules are set:
 
 * Deny uploading public objects.
+* Deny updating policy to allow public objects.
+
+The following ACL rules are set:
+
+* Retroactively remove public access granted through public ACLs
+* Deny updating ACL to public
 
 The following lifecycle rules are set:
 
@@ -29,14 +35,13 @@ The following lifecycle rules are set:
       }
     }
 
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | bucket | The name of the bucket. It will be prefixed with the AWS account alias. | string | - | yes |
-| custom_bucket_policy | JSON formatted bucket policy to attach to the bucket. | string | `` | no |
-| logging_bucket | The S3 bucket to send S3 access logs. | string | - | yes |
+| custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | string | `` | no |
+| logging\_bucket | The S3 bucket to send S3 access logs. | string | - | yes |
 | tags | A mapping of tags to assign to the bucket. | map | `<map>` | no |
 
 ## Outputs

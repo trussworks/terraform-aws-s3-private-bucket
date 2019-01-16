@@ -9,7 +9,13 @@
  * The following policy rules are set:
  *
  * * Deny uploading public objects.
+ * * Deny updating policy to allow public objects.
  *
+ * The following ACL rules are set:
+ * 
+ * * Retroactively remove public access granted through public ACLs
+ * * Deny updating ACL to public
+ * 
  * The following lifecycle rules are set:
  *
  * * Incomplete multipart uploads are deleted after 14 days.
@@ -37,42 +43,9 @@ locals {
   bucket_id = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
 }
 
-data "aws_iam_policy_document" "policy" {
-  source_json = "${var.custom_bucket_policy}"
-
-  statement {
-    sid = "ensure-private-read-write"
-
-    actions = [
-      "s3:PutObject",
-      "s3:PutObjectAcl",
-    ]
-
-    effect = "Deny"
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    resources = ["arn:aws:s3:::${local.bucket_id}/*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-
-      values = [
-        "public-read",
-        "public-read-write",
-      ]
-    }
-  }
-}
-
 resource "aws_s3_bucket" "private_bucket" {
   bucket = "${local.bucket_id}"
   acl    = "private"
-  policy = "${data.aws_iam_policy_document.policy.json}"
   tags   = "${var.tags}"
 
   versioning {
@@ -110,4 +83,18 @@ resource "aws_s3_bucket" "private_bucket" {
       }
     }
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  bucket = "${aws_s3_bucket.private_bucket.id}"
+
+  # Block new public ACLs and uploading public objects
+  block_public_acls   = true
+  # Retroactively remove public access granted through public ACLs 
+  ignore_public_acls = true
+  # Block new public bucket policies 
+  block_public_policy = true
+  # Retroactivley block public and cross-account access if bucket has public policies
+  restrict_public_buckets = true
+
 }
