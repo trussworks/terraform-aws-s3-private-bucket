@@ -12,10 +12,10 @@
  * * Deny updating policy to allow public objects.
  *
  * The following ACL rules are set:
- * 
+ *
  * * Retroactively remove public access granted through public ACLs
  * * Deny updating ACL to public
- * 
+ *
  * The following lifecycle rules are set:
  *
  * * Incomplete multipart uploads are deleted after 14 days.
@@ -89,12 +89,14 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   bucket = "${aws_s3_bucket.private_bucket.id}"
 
   # Block new public ACLs and uploading public objects
-  block_public_acls   = true
-  # Retroactively remove public access granted through public ACLs 
+  block_public_acls = true
+
+  # Retroactively remove public access granted through public ACLs
   ignore_public_acls = true
-  # Block new public bucket policies 
+
+  # Block new public bucket policies
   block_public_policy = true
+
   # Retroactivley block public and cross-account access if bucket has public policies
   restrict_public_buckets = true
-
 }
