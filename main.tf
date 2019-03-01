@@ -40,7 +40,8 @@
 data "aws_iam_account_alias" "current" {}
 
 locals {
-  bucket_id = "${data.aws_iam_account_alias.current.account_alias}-${var.bucket}"
+  bucket_prefix = "${var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""}"
+  bucket_id     = "${local.bucket_prefix}${var.bucket}"
 }
 
 resource "aws_s3_bucket" "private_bucket" {
