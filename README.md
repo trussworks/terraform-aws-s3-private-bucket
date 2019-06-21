@@ -51,6 +51,8 @@ The following lifecycle rules are set:
 | Name | Description |
 |------|-------------|
 | arn | The ARN of the bucket. Will be of format arn:aws:s3:::bucketname. |
+| bucket\_domain\_name | The bucket domain name. |
+| bucket\_regional\_domain\_name | The bucket region-specific domain name. |
 | id | The name of the bucket. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
