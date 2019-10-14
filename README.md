@@ -63,12 +63,12 @@ The following lifecycle rules are set:
 automated testing with this module. Tests in the `test` folder can be run
 locally by running the following command:
 
-```bash
+```text
 go test -v ./test/...
 ```
 
 Or with aws-vault:
 
-```bash
+```text
 AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- go test -v ./test/...
 ```
