@@ -23,11 +23,13 @@ jobs:
   terratest:
     docker:
       - image: *circleci_docker_primary
+        environment:
+          AWS_DEFAULT_REGION: us-west-2
     steps:
       - checkout
       - run:
-          name: Validate aws credentials
-          command: aws s3 ls
+          name: Run terratest
+          command: go test -v ./test/...
 
 workflows:
   version: 2
