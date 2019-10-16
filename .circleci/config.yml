@@ -1,8 +1,12 @@
 version: 2
+
+references:
+  circleci_docker_primary: &circleci_docker_primary trussworks/circleci-docker-primary:tf12-0f54e1d0b033fd7639ae287ecd4445b4aa9bd37a
+
 jobs:
   validate:
     docker:
-      - image: trussworks/circleci-docker-primary:a1006bfda60d05876196f03119898777542529d5
+      - image: *circleci_docker_primary
     steps:
       - checkout
       - restore_cache:
@@ -16,8 +20,18 @@ jobs:
           paths:
             - ~/.cache
 
+  terratest:
+    docker:
+      - image: *circleci_docker_primary
+    steps:
+      - checkout
+      - run:
+          name: Run terratest
+          command: go test -v ./test/...
+
 workflows:
   version: 2
   validate:
     jobs:
       - validate
+      - terratest
