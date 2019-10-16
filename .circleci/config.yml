@@ -26,7 +26,6 @@ jobs:
         environment:
           AWS_DEFAULT_REGION: us-west-2
           TERRATEST_REGION: us-west-2
-          GO111MODULE: on
     steps:
       - checkout
       - run:
