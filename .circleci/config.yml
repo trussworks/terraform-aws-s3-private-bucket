@@ -23,8 +23,6 @@ jobs:
   terratest:
     docker:
       - image: *circleci_docker_primary
-        environment:
-          TERRATEST_REGION: us-west-2
     steps:
       - checkout
       - run:
