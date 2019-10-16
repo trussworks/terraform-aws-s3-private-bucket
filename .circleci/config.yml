@@ -24,7 +24,6 @@ jobs:
     docker:
       - image: *circleci_docker_primary
         environment:
-          AWS_DEFAULT_REGION: us-west-2
           TERRATEST_REGION: us-west-2
     steps:
       - checkout
