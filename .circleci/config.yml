@@ -45,5 +45,5 @@ workflows:
   validate:
     jobs:
       - validate
-      - terratest-11
-      - terratest-12
+      - terratest-tf11
+      - terratest-tf12
