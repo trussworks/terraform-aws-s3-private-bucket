@@ -1,12 +1,13 @@
 version: 2
 
 references:
-  circleci_docker_primary: &circleci_docker_primary trussworks/circleci-docker-primary:tf12-0f54e1d0b033fd7639ae287ecd4445b4aa9bd37a
+  circleci_docker_primary_tf11: &circleci_docker_primary_tf11 trussworks/circleci-docker-primary:0f54e1d0b033fd7639ae287ecd4445b4aa9bd37a
+  circleci_docker_primary_tf12: &circleci_docker_primary_tf12 trussworks/circleci-docker-primary:tf12-0f54e1d0b033fd7639ae287ecd4445b4aa9bd37a
 
 jobs:
   validate:
     docker:
-      - image: *circleci_docker_primary
+      - image: *circleci_docker_primary_tf12
     steps:
       - checkout
       - restore_cache:
@@ -21,9 +22,18 @@ jobs:
           paths:
             - ~/.cache
 
-  terratest:
+  terratest-tf11:
     docker:
-      - image: *circleci_docker_primary
+      - image: *circleci_docker_primary_tf11
+    steps:
+      - checkout
+      - run:
+          name: Run terratest
+          command: go test -v ./test/...
+
+  terratest-tf12:
+    docker:
+      - image: *circleci_docker_primary_tf12
     steps:
       - checkout
       - run:
@@ -35,4 +45,5 @@ workflows:
   validate:
     jobs:
       - validate
-      - terratest
+      - terratest-11
+      - terratest-12
