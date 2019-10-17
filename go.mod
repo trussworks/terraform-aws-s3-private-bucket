@@ -3,12 +3,12 @@ module github.com/trussworks/terraform-aws-s3-private-bucket
 go 1.13
 
 require (
-	github.com/aws/aws-sdk-go v1.25.11
+	github.com/aws/aws-sdk-go v1.25.15
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/google/uuid v0.0.0-20161128191214-064e2069ce9c
-	github.com/gruntwork-io/terratest v0.17.6
+	github.com/gruntwork-io/terratest v0.21.0
 	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0
