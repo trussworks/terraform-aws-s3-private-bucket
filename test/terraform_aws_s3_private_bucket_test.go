@@ -167,6 +167,8 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 	expectedLoggingBucket := fmt.Sprintf("terratest-aws-s3-logging-%s", strings.ToLower(random.UniqueId()))
 
+	customBucketPolicy := fmt.Sprintf("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ses.amazonaws.com\"},\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::%s/*\"}]}", expectedName)
+
 	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
 	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
 
@@ -176,8 +178,10 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"bucket":         expectedName,
-			"logging_bucket": expectedLoggingBucket,
+			"bucket":                   expectedName,
+			"logging_bucket":           expectedLoggingBucket,
+			"custom_bucket_policy":     customBucketPolicy,
+			"use_account_alias_prefix": false,
 		},
 
 		// Environment variables to set when running Terraform
@@ -223,4 +227,5 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, bucketID)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, bucketID)
 	AssertS3BucketLoggingEnabled(t, awsRegion, bucketID, expectedLoggingBucket)
+	aws.AssertS3BucketPolicyExists(t, awsRegion, bucketID)
 }
