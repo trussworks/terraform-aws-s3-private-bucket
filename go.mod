@@ -10,7 +10,6 @@ require (
 	github.com/google/uuid v0.0.0-20161128191214-064e2069ce9c
 	github.com/gruntwork-io/terratest v0.21.0
 	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
-	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0
 	github.com/pquerna/otp v1.2.0
 	github.com/stretchr/testify v1.4.0
