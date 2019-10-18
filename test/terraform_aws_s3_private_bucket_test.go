@@ -2,6 +2,8 @@ package test
 
 import (
 	"fmt"
+	"os/exec"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -158,6 +160,22 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 	return nil
 }
 
+func isTerraformVersion(t *testing.T, version string) (bool, error) {
+	cmd := exec.Command("terraform", "version")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		logger.Log(t, err)
+		return false, err
+	}
+
+	matched, err := regexp.Match(fmt.Sprintf("Terraform v%s", version), out)
+	if err != nil {
+		logger.Log(t, err)
+		return false, err
+	}
+	return matched, nil
+}
+
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
@@ -168,6 +186,14 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	expectedLoggingBucket := fmt.Sprintf("terratest-aws-s3-logging-%s", strings.ToLower(random.UniqueId()))
 
 	customBucketPolicy := fmt.Sprintf("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ses.amazonaws.com\"},\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::%s/*\"}]}", expectedName)
+	matched, err := isTerraformVersion(t, "0.11")
+	if err != nil {
+		logger.Log(t, err)
+		return
+	}
+	if matched {
+		customBucketPolicy = fmt.Sprintf("%q", customBucketPolicy)
+	}
 
 	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
 	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
