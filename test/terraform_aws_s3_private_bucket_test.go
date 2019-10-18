@@ -186,6 +186,8 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	expectedLoggingBucket := fmt.Sprintf("terratest-aws-s3-logging-%s", strings.ToLower(random.UniqueId()))
 
 	customBucketPolicy := fmt.Sprintf("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ses.amazonaws.com\"},\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::%s/*\"}]}", expectedName)
+
+	// The custom bucket policy must be wrapped in quotes for Terraform 11, but not for Terraform 12
 	matched, err := isTerraformVersion(t, "0.11")
 	if err != nil {
 		logger.Log(t, err)
