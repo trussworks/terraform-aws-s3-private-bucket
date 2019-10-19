@@ -29,14 +29,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
+            - go-mod-sources-v1-{{ checksum "go.sum" }}
       - run:
           name: Run terratest
           command: go test -v ./test/...
       - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
+          key: go-mod-sources-v1-{{ checksum "go.sum" }}
           paths:
-            - "/go/pkg/mod"
+            - "~/go/pkg/mod"
 
   terratest-tf12:
     docker:
@@ -45,14 +45,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
+            - go-mod-sources-v1-{{ checksum "go.sum" }}
       - run:
           name: Run terratest
           command: go test -v ./test/...
       - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
+          key: go-mod-sources-v1-{{ checksum "go.sum" }}
           paths:
-            - "/go/pkg/mod"
+            - "~/go/pkg/mod"
 
 workflows:
   version: 2
