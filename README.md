@@ -72,3 +72,13 @@ Or with aws-vault:
 ```text
 AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- go test -v ./test/...
 ```
+
+By default, terratest will attempt to create the test buckets in a random AWS
+region. To use a specific region, set the `TERRATEST_REGION` environment
+variable.
+
+Example:
+
+```text
+export TERRATEST_REGION=us-west-2
+```

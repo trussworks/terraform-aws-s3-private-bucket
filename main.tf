@@ -47,6 +47,7 @@ locals {
 resource "aws_s3_bucket" "private_bucket" {
   bucket = "${local.bucket_id}"
   acl    = "private"
+  policy = "${var.custom_bucket_policy}"
   tags   = "${var.tags}"
 
   versioning {
