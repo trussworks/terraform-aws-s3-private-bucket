@@ -23,6 +23,8 @@ github.com/aws/aws-sdk-go v1.25.11 h1:wUivbsVOH3LpHdC3Rl5i+FLHfg4sOmYgv4bvHe7+/P
 github.com/aws/aws-sdk-go v1.25.11/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.25.15 h1:2XrAm3F7QuNguJXJ6SUJxywL1TPNDM3z/mNEaS0CHtk=
 github.com/aws/aws-sdk-go v1.25.15/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
+github.com/aws/aws-sdk-go v1.25.16 h1:k7Fy6T/uNuLX6zuayU/TJoP7yMgGcJSkZpF7QVjwYpA=
+github.com/aws/aws-sdk-go v1.25.16/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc h1:biVzkmvwrH8WK8raXaxBx6fRVTlJILwEwQGL1I/ByEI=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
@@ -65,6 +67,8 @@ github.com/gruntwork-io/terratest v0.17.6 h1:efnWnoz3GvM6VGHvRebGaO41ne4ZTKMvMqM
 github.com/gruntwork-io/terratest v0.17.6/go.mod h1:NjUn6YXA5Skxt8Rs20t3isYx5Rl+EgvGB8/+RRXddqk=
 github.com/gruntwork-io/terratest v0.21.0 h1:V04VYUaw9bMn+bn3pQDRkziGNzK4SRP2BfDScozGmrA=
 github.com/gruntwork-io/terratest v0.21.0/go.mod h1:veL2PxiS2Z5S63ERnyiIY/sxgmXJpZD8YZybiqvduwQ=
+github.com/gruntwork-io/terratest v0.22.0 h1:vNJKxwXR5NtLLxYFzhWeZgiaF1PNmkv7O2iMznwl0tM=
+github.com/gruntwork-io/terratest v0.22.0/go.mod h1:veL2PxiS2Z5S63ERnyiIY/sxgmXJpZD8YZybiqvduwQ=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/golang-lru v0.5.3/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
