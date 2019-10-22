@@ -164,13 +164,11 @@ func isTerraformVersion(t *testing.T, version string) (bool, error) {
 	cmd := exec.Command("terraform", "version")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		logger.Log(t, err)
 		return false, err
 	}
 
 	matched, err := regexp.Match(fmt.Sprintf("Terraform v%s", version), out)
 	if err != nil {
-		logger.Log(t, err)
 		return false, err
 	}
 	return matched, nil
