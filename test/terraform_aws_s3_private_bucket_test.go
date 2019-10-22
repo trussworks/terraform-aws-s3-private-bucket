@@ -6,12 +6,14 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	awssdk "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
 )
@@ -20,6 +22,7 @@ func GetPublicAccessBlockConfiguration(t *testing.T, region string, bucketName s
 	config, err := GetPublicAccessBlockConfigurationE(t, region, bucketName)
 	require.NoError(t, err)
 	return config
+
 }
 
 func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName string) (*s3.PublicAccessBlockConfiguration, error) {
@@ -33,13 +36,25 @@ func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName 
 		Bucket: awssdk.String(bucketName),
 	}
 
-	publicAccessBlock, err := s3Client.GetPublicAccessBlock(params)
+	var publicAccessBlockConfiguration *s3.PublicAccessBlockConfiguration
+	maxRetries := 3
+	retryDuration, _ := time.ParseDuration("5s")
+	_, err = retry.DoWithRetryE(t, "Get public access block configuration", maxRetries, retryDuration,
+		func() (string, error) {
+			publicAccessBlock, err := s3Client.GetPublicAccessBlock(params)
+			if err != nil {
+				return "", err
+			}
+			publicAccessBlockConfiguration = publicAccessBlock.PublicAccessBlockConfiguration
+			return "Retrieved public access block configuration", nil
+		},
+	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return publicAccessBlock.PublicAccessBlockConfiguration, nil
+	return publicAccessBlockConfiguration, nil
 }
 
 func AssertS3BucketEncryptionEnabled(t *testing.T, region string, bucketName string) {
