@@ -6,12 +6,14 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	awssdk "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
 )
@@ -20,6 +22,7 @@ func GetPublicAccessBlockConfiguration(t *testing.T, region string, bucketName s
 	config, err := GetPublicAccessBlockConfigurationE(t, region, bucketName)
 	require.NoError(t, err)
 	return config
+
 }
 
 func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName string) (*s3.PublicAccessBlockConfiguration, error) {
@@ -33,13 +36,25 @@ func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName 
 		Bucket: awssdk.String(bucketName),
 	}
 
-	publicAccessBlock, err := s3Client.GetPublicAccessBlock(params)
+	var publicAccessBlockConfiguration *s3.PublicAccessBlockConfiguration
+	maxRetries := 3
+	retryDuration, _ := time.ParseDuration("30s")
+	_, err = retry.DoWithRetryE(t, "Get public access block configuration", maxRetries, retryDuration,
+		func() (string, error) {
+			publicAccessBlock, err := s3Client.GetPublicAccessBlock(params)
+			if err != nil {
+				return "", err
+			}
+			publicAccessBlockConfiguration = publicAccessBlock.PublicAccessBlockConfiguration
+			return "Retrieved public access block configuration", nil
+		},
+	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return publicAccessBlock.PublicAccessBlockConfiguration, nil
+	return publicAccessBlockConfiguration, nil
 }
 
 func AssertS3BucketEncryptionEnabled(t *testing.T, region string, bucketName string) {
@@ -58,21 +73,29 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, region string, bucketName st
 		Bucket: awssdk.String(bucketName),
 	}
 
-	encryption, err := s3Client.GetBucketEncryption(params)
+	maxRetries := 3
+	retryDuration, _ := time.ParseDuration("30s")
+	_, err = retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration,
+		func() (string, error) {
+			encryption, err := s3Client.GetBucketEncryption(params)
 
-	if err != nil {
-		return err
-	}
+			if err != nil {
+				return "", err
+			}
 
-	expectedEncryption := "AES256"
-	for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
-		actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
-		if *actualEncryption != expectedEncryption {
-			return fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
-		}
-	}
+			expectedEncryption := "AES256"
+			for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
+				actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
+				if *actualEncryption != expectedEncryption {
+					return "", fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
+				}
+			}
 
-	return nil
+			return "Retrieved bucket encryption", nil
+		},
+	)
+
+	return err
 }
 
 func AssertS3BucketBlockPublicACLEnabled(t *testing.T, region string, bucketName string) {
