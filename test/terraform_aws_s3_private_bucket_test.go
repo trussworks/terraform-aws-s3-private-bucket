@@ -75,24 +75,24 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, region string, bucketName st
 
 	maxRetries := 3
 	retryDuration, _ := time.ParseDuration("30s")
-	_, err = retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration, func() (string, error) {
+	_, err = retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration,
+		func() (string, error) {
+			encryption, err := s3Client.GetBucketEncryption(params)
 
-		encryption, err := s3Client.GetBucketEncryption(params)
-
-		if err != nil {
-			return "", err
-		}
-
-		expectedEncryption := "AES256"
-		for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
-			actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
-			if *actualEncryption != expectedEncryption {
-				return "", fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
+			if err != nil {
+				return "", err
 			}
-		}
 
-		return "Retrieved bucket encryption", nil
-	},
+			expectedEncryption := "AES256"
+			for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
+				actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
+				if *actualEncryption != expectedEncryption {
+					return "", fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
+				}
+			}
+
+			return "Retrieved bucket encryption", nil
+		},
 	)
 
 	return err
