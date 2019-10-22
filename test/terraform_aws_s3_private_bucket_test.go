@@ -73,21 +73,29 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, region string, bucketName st
 		Bucket: awssdk.String(bucketName),
 	}
 
-	encryption, err := s3Client.GetBucketEncryption(params)
+	maxRetries := 3
+	retryDuration, _ := time.ParseDuration("5s")
+	_, err = retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration, func() (string, error) {
 
-	if err != nil {
-		return err
-	}
+		encryption, err := s3Client.GetBucketEncryption(params)
 
-	expectedEncryption := "AES256"
-	for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
-		actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
-		if *actualEncryption != expectedEncryption {
-			return fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
+		if err != nil {
+			return "", err
 		}
-	}
 
-	return nil
+		expectedEncryption := "AES256"
+		for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
+			actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
+			if *actualEncryption != expectedEncryption {
+				return "", fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
+			}
+		}
+
+		return "Retrieved bucket encryption", nil
+	},
+	)
+
+	return err
 }
 
 func AssertS3BucketBlockPublicACLEnabled(t *testing.T, region string, bucketName string) {
