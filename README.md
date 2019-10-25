@@ -22,6 +22,12 @@ The following lifecycle rules are set:
 * Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
 * Noncurrent object versions expire after 365 days.
 
+## Terraform Versions
+
+Terraform 0.12. Pin module version to ~> 2.0.0. Submit pull-requests to master branch.
+
+Terraform 0.11. Pin module version to ~> 1.7.3. Submit pull-requests to terraform011 branch.
+
 ## Usage
 
     module "aws-s3-bucket" {
