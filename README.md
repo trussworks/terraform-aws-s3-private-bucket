@@ -1,4 +1,3 @@
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 Creates a private S3 bucket with good defaults:
 
 * Private only objects
@@ -23,6 +22,12 @@ The following lifecycle rules are set:
 * Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
 * Noncurrent object versions expire after 365 days.
 
+## Terraform Versions
+
+Terraform 0.12. Pin module version to ~> 2.0.0. Submit pull-requests to master branch.
+
+Terraform 0.11. Pin module version to ~> 1.7.3. Submit pull-requests to terraform011 branch.
+
 ## Usage
 
     module "aws-s3-bucket" {
@@ -36,6 +41,7 @@ The following lifecycle rules are set:
       }
     }
 
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -43,7 +49,7 @@ The following lifecycle rules are set:
 | bucket | The name of the bucket. | string | n/a | yes |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | string | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | string | n/a | yes |
-| tags | A mapping of tags to assign to the bucket. | map | `{}` | no |
+| tags | A mapping of tags to assign to the bucket. | map(string) | `{}` | no |
 | use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | string | `"true"` | no |
 
 ## Outputs
@@ -63,15 +69,11 @@ The following lifecycle rules are set:
 automated testing with this module. Tests in the `test` folder can be run
 locally by running the following command:
 
-```text
-go test -v ./test/...
-```
+    go test -v ./test/...
 
 Or with aws-vault:
 
-```text
-AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- go test -v ./test/...
-```
+    AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- go test -v ./test/...
 
 By default, terratest will attempt to create the test buckets in a random AWS
 region. To use a specific region, set the `TERRATEST_REGION` environment
@@ -79,6 +81,4 @@ variable.
 
 Example:
 
-```text
-export TERRATEST_REGION=us-west-2
-```
+    export TERRATEST_REGION=us-west-2

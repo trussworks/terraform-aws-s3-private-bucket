@@ -1,6 +1,6 @@
 repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
+    rev: v2.3.0
     hooks:
     -   id: check-json
     -   id: check-merge-conflict
@@ -19,13 +19,12 @@ repos:
         verbose: true
 
 -   repo: git://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.10.0
+    rev: v1.19.0
     hooks:
     - id: terraform_docs
     - id: terraform_fmt
-    - id: terraform_validate_no_variables
 
 -   repo: git://github.com/igorshubovych/markdownlint-cli
-    rev: v0.14.0
+    rev: v0.19.0
     hooks:
     -   id: markdownlint

@@ -1,8 +1,7 @@
 version: 2
 
 references:
-  circleci_docker_primary_tf11: &circleci_docker_primary_tf11 trussworks/circleci-docker-primary:0f54e1d0b033fd7639ae287ecd4445b4aa9bd37a
-  circleci_docker_primary_tf12: &circleci_docker_primary_tf12 trussworks/circleci-docker-primary:tf12-0f54e1d0b033fd7639ae287ecd4445b4aa9bd37a
+  circleci_docker_primary_tf12: &circleci_docker_primary_tf12 trussworks/circleci-docker-primary:tf12-86954077a1d6587de6c636ed6163001fd0575d87
 
 jobs:
   validate:
@@ -21,22 +20,6 @@ jobs:
           key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
           paths:
             - ~/.cache
-
-  terratest-tf11:
-    docker:
-      - image: *circleci_docker_primary_tf11
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-sources-v1-{{ checksum "go.sum" }}
-      - run:
-          name: Run terratest
-          command: go test -v ./test/...
-      - save_cache:
-          key: go-mod-sources-v1-{{ checksum "go.sum" }}
-          paths:
-            - "~/go/pkg/mod"
 
   terratest-tf12:
     docker:
@@ -59,5 +42,4 @@ workflows:
   validate:
     jobs:
       - validate
-      - terratest-tf11
       - terratest-tf12
