@@ -3,7 +3,7 @@ module github.com/trussworks/terraform-aws-s3-private-bucket
 go 1.13
 
 require (
-	github.com/aws/aws-sdk-go v1.25.19
+	github.com/aws/aws-sdk-go v1.25.25
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-sql-driver/mysql v1.4.1
