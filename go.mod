@@ -17,5 +17,5 @@ require (
 	golang.org/x/net v0.0.0-20191009170851-d66e71096ffb
 	golang.org/x/sys v0.0.0-20191010194322-b09406accb47
 	google.golang.org/appengine v1.6.5
-	gopkg.in/yaml.v2 v2.2.4
+	gopkg.in/yaml.v2 v2.2.5
 )
