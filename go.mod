@@ -8,7 +8,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/google/uuid v0.0.0-20161128191214-064e2069ce9c
-	github.com/gruntwork-io/terratest v0.22.2
+	github.com/gruntwork-io/terratest v0.22.3
 	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 	github.com/pmezard/go-difflib v1.0.0
 	github.com/pquerna/otp v1.2.0
