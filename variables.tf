@@ -3,10 +3,10 @@ variable "bucket" {
   type        = string
 }
 
-variable "use_account_alias_prefix" {
-  description = "Whether to prefix the bucket name with the AWS account alias."
+variable "bucket_prefix" {
+  description = "The prefix for the bucket."
   type        = string
-  default     = true
+  default     = ""
 }
 
 variable "custom_bucket_policy" {

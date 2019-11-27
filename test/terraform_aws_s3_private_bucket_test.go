@@ -24,7 +24,6 @@ func GetPublicAccessBlockConfiguration(t *testing.T, region string, bucketName s
 
 func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName string) (*s3.PublicAccessBlockConfiguration, error) {
 	s3Client, err := aws.NewS3ClientE(t, region)
-
 	if err != nil {
 		return nil, err
 	}

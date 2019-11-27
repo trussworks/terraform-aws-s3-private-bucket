@@ -5,9 +5,8 @@
 module "s3_private_bucket" {
   source = "../../"
 
-  bucket                   = var.test_name
-  use_account_alias_prefix = false
-  logging_bucket           = module.s3_logs.aws_logs_bucket
+  bucket         = var.test_name
+  logging_bucket = module.s3_logs.aws_logs_bucket
 }
 
 #

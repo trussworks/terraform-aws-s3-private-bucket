@@ -47,10 +47,10 @@ Terraform 0.11. Pin module version to ~> 1.7.3. Submit pull-requests to terrafor
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | bucket | The name of the bucket. | string | n/a | yes |
+| bucket\_prefix | The prefix for the bucket. | string | `""` | no |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | string | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | string | n/a | yes |
 | tags | A mapping of tags to assign to the bucket. | map(string) | `{}` | no |
-| use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | string | `"true"` | no |
 
 ## Outputs
 
