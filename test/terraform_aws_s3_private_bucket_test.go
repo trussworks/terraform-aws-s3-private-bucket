@@ -12,6 +12,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/require"
 )
 
@@ -183,6 +184,8 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple")
+
 	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
 	// in your AWS account
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
@@ -193,7 +196,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../examples/simple",
+		TerraformDir: tempTestFolder,
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
@@ -226,23 +229,18 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	t.Parallel()
 
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/custom-bucket-policy")
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
-
 	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
 
 	terraformOptions := &terraform.Options{
-		// The path to where our Terraform code is located
-		TerraformDir: "../examples/custom-bucket-policy",
-
-		// Variables to pass to our Terraform code using -var options
+		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
 			"test_name":      testName,
 			"logging_bucket": loggingBucket,
 			"region":         awsRegion,
 		},
-
-		// Environment variables to set when running Terraform
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
