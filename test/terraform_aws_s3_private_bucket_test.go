@@ -190,9 +190,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	// in your AWS account
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
-
-	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
-	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
+	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -232,7 +230,7 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/custom-bucket-policy")
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
-	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
+	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
