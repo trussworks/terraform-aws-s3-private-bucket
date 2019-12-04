@@ -30,16 +30,18 @@ Terraform 0.11. Pin module version to ~> 1.7.3. Submit pull-requests to terrafor
 
 ## Usage
 
-    module "aws-s3-bucket" {
-      source         = "trussworks/s3-private-bucket/aws"
-      bucket         = "my-bucket-name"
-      logging_bucket = "my-aws-logs"
+```hcl
+module "aws-s3-bucket" {
+  source         = "trussworks/s3-private-bucket/aws"
+  bucket         = "my-bucket-name"
+  logging_bucket = "my-aws-logs"
 
-      tags {
-        Name        = "My bucket"
-        Environment = "Dev"
-      }
-    }
+  tags {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
@@ -63,22 +65,26 @@ Terraform 0.11. Pin module version to ~> 1.7.3. Submit pull-requests to terrafor
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
-## Testing
+## Developer Setup
+
+Install dependencies (macOS)
+
+```shell
+brew install pre-commit go terraform terraform-docs
+```
+
+### Testing
 
 [Terratest](https://github.com/gruntwork-io/terratest) is being used for
 automated testing with this module. Tests in the `test` folder can be run
 locally by running the following command:
 
-    go test -v ./test/...
+```shell
+make test
+```
 
 Or with aws-vault:
 
-    AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- go test -v ./test/...
-
-By default, terratest will attempt to create the test buckets in a random AWS
-region. To use a specific region, set the `TERRATEST_REGION` environment
-variable.
-
-Example:
-
-    export TERRATEST_REGION=us-west-2
+```shell
+AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- make test
+```
