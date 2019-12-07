@@ -5,9 +5,10 @@
 module "s3_private_bucket" {
   source = "../../"
 
+  bucket_prefix  = var.test_prefix
   bucket         = var.test_name
   logging_bucket = module.s3_logs.aws_logs_bucket
-  use_prefix     = false
+  use_prefix     = true
 }
 
 #

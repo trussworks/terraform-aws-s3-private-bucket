@@ -9,3 +9,7 @@ variable "logging_bucket" {
 variable "region" {
   type = string
 }
+
+variable "use_prefix" {
+  type = bool
+}

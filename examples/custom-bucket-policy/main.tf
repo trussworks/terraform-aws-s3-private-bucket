@@ -39,6 +39,7 @@ module "s3_private_bucket" {
   bucket               = var.test_name
   custom_bucket_policy = data.aws_iam_policy_document.custom_bucket_policy.json
   logging_bucket       = module.s3_logs.aws_logs_bucket
+  use_prefix           = false
 }
 
 #

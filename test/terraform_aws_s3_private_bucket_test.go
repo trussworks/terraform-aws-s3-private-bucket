@@ -13,6 +13,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -197,6 +198,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
+			"use_prefix":     "false",
 			"test_name":      testName,
 			"logging_bucket": loggingBucket,
 			"region":         awsRegion,
@@ -213,6 +215,11 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
+
+	// Check the bucket name
+	bucketName := terraform.Output(t, terraformOptions, "id")
+	assert.NotEmpty(t, bucketName)
+	assert.Equal(t, bucketName, testName)
 
 	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
@@ -234,6 +241,7 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
+			"use_prefix":     "false",
 			"test_name":      testName,
 			"logging_bucket": loggingBucket,
 			"region":         awsRegion,
@@ -247,5 +255,44 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
+	// Check the bucket name
+	bucketName := terraform.Output(t, terraformOptions, "id")
+	assert.NotEmpty(t, bucketName)
+	assert.Equal(t, bucketName, testName)
+
 	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
+}
+
+func TestTerraformAwsS3PrivateBucketWithPrefix(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/prefix-bucket")
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
+	testPrefix := "custom"
+	loggingBucket := fmt.Sprintf("%s-logs", testName)
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: tempTestFolder,
+		Vars: map[string]interface{}{
+			"use_prefix":     "true",
+			"test_prefix":    testPrefix,
+			"test_name":      testName,
+			"logging_bucket": loggingBucket,
+			"region":         awsRegion,
+		},
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
+	}
+
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	// Check the bucket name with test prefix
+	returnedBucketName := terraform.Output(t, terraformOptions, "id")
+	expectedBucketName := fmt.Sprintf("%s-%s", testPrefix, testName)
+	assert.NotEmpty(t, returnedBucketName)
+	assert.Equal(t, returnedBucketName, expectedBucketName)
 }

@@ -13,3 +13,7 @@ variable "region" {
 variable "use_prefix" {
   type = bool
 }
+
+variable "test_prefix" {
+  type = string
+}

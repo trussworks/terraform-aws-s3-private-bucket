@@ -2,11 +2,11 @@ data "aws_iam_account_alias" "current" {
 }
 
 locals {
-  bucket_id = "${var.bucket_prefix}${var.bucket}"
+  bucket_name = var.use_prefix ? format("%s-%s", var.bucket_prefix, var.bucket) : var.bucket
 }
 
 resource "aws_s3_bucket" "private_bucket" {
-  bucket = local.bucket_id
+  bucket = local.bucket_name
   acl    = "private"
   policy = var.custom_bucket_policy
   tags   = var.tags
@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "private_bucket" {
 
   logging {
     target_bucket = var.logging_bucket
-    target_prefix = "s3/${local.bucket_id}/"
+    target_prefix = "s3/${local.bucket_name}/"
   }
 
   server_side_encryption_configuration {

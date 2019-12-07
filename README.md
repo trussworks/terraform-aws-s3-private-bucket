@@ -53,6 +53,7 @@ module "aws-s3-bucket" {
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | string | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | string | n/a | yes |
 | tags | A mapping of tags to assign to the bucket. | map(string) | `{}` | no |
+| use\_prefix | Whether to prefix the bucket name with passed in variable. | bool | `"true"` | no |
 
 ## Outputs
 

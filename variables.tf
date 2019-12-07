@@ -9,6 +9,12 @@ variable "bucket_prefix" {
   default     = ""
 }
 
+variable "use_prefix" {
+  description = "Whether to prefix the bucket name with passed in variable."
+  type        = bool
+  default     = true
+}
+
 variable "custom_bucket_policy" {
   description = "JSON formatted bucket policy to attach to the bucket."
   type        = string
