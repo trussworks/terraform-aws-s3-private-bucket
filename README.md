@@ -28,13 +28,30 @@ Terraform 0.12. Pin module version to ~> 2.0.0. Submit pull-requests to master b
 
 Terraform 0.11. Pin module version to ~> 1.7.3. Submit pull-requests to terraform011 branch.
 
-## Usage
+## Simple Usage
 
 ```hcl
 module "aws-s3-bucket" {
   source         = "trussworks/s3-private-bucket/aws"
   bucket         = "my-bucket-name"
   logging_bucket = "my-aws-logs"
+
+  tags {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+```
+
+## Usage with Bucket Prefix
+
+```hcl
+module "aws-s3-bucket" {
+  source         = "trussworks/s3-private-bucket/aws"
+  bucket         = "my-bucket-name"
+  logging_bucket = "my-aws-logs"
+  use_prefix     = true
+  bucket_prefix  = "my-bucket-prefix
 
   tags {
     Name        = "My bucket"
