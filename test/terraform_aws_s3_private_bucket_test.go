@@ -276,6 +276,10 @@ func TestTerraformAwsInventory(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
+	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
+
 	aws.AssertS3BucketExists(t, awsRegion, testName)
+
+	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
 
 }
