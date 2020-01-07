@@ -2,8 +2,9 @@ data "aws_iam_account_alias" "current" {
 }
 
 locals {
-  bucket_prefix = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
-  bucket_id     = "${local.bucket_prefix}${var.bucket}"
+  bucket_prefix       = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
+  bucket_id           = "${local.bucket_prefix}${var.bucket}"
+  inventory_bucket_id = "inventory-${local.bucket_prefix}${var.bucket}"
 }
 
 resource "aws_s3_bucket" "private_bucket" {
@@ -49,6 +50,38 @@ resource "aws_s3_bucket" "private_bucket" {
   }
 }
 
+resource "aws_s3_bucket" "inventory_bucket" {
+  count = var.enable_bucket_inventory ? 1 : 0
+
+  bucket = local.inventory_bucket_id
+  acl    = "private"
+  #policy = var.custom_bucket_policy
+  tags = var.tags
+
+  lifecycle_rule {
+    enabled = true
+
+    prefix = "_AWSBucketInventory/"
+
+    expiration {
+      days = 7
+    }
+  }
+
+  logging {
+    target_bucket = var.logging_bucket
+    target_prefix = "s3/${local.bucket_id}/"
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
   bucket = aws_s3_bucket.private_bucket.id
 
@@ -63,5 +96,29 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 
   # Retroactivley block public and cross-account access if bucket has public policies
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_inventory" "inventory" {
+  count = var.enable_bucket_inventory ? 1 : 0
+
+  bucket = aws_s3_bucket.private_bucket.id
+  name   = "WeeklyInventory"
+
+  included_object_versions = "All"
+
+  schedule {
+    frequency = "Weekly"
+  }
+
+  destination {
+    bucket {
+      format     = "ORC"
+      bucket_arn = aws_s3_bucket.inventory_bucket[0].arn
+      prefix     = "_AWSBucketInventory/"
+    }
+  }
+
+  optional_fields = ["Size", "LastModifiedDate", "StorageClass", "ETag", "IsMultipartUploaded", "ReplicationStatus", "EncryptionStatus",
+  "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus", "IntelligentTieringAccessTier"]
 }
 

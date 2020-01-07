@@ -26,3 +26,8 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "enable_bucket_inventory" {
+  type        = bool
+  default     = false
+  description = "If set to true, Bucket Inventory will be enabled."
+}
