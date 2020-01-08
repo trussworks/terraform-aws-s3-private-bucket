@@ -14,3 +14,8 @@ variable "enable_bucket_inventory" {
   type    = bool
   default = false
 }
+
+variable "enable_bucket_logging" {
+  type    = bool
+  default = true
+}

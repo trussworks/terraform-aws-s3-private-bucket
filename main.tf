@@ -46,9 +46,12 @@ resource "aws_s3_bucket" "private_bucket" {
     }
   }
 
-  logging {
-    target_bucket = var.logging_bucket
-    target_prefix = "s3/${local.bucket_id}/"
+  dynamic "logging" {
+    for_each = var.enable_bucket_logging ? [1] : []
+    content {
+      target_bucket = var.logging_bucket
+      target_prefix = "s3/${local.bucket_id}/"
+    }
   }
 
   server_side_encryption_configuration {

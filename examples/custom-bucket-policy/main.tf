@@ -40,6 +40,7 @@ module "s3_private_bucket" {
   custom_bucket_policy     = data.aws_iam_policy_document.custom_bucket_policy.json
   use_account_alias_prefix = false
   logging_bucket           = module.s3_logs.aws_logs_bucket
+  enable_bucket_logging    = true
 }
 
 #

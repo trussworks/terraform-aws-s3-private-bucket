@@ -41,6 +41,7 @@ module "s3_private_bucket" {
   use_account_alias_prefix = false
   logging_bucket           = module.s3_logs.aws_logs_bucket
   enable_bucket_inventory  = true
+  enable_bucket_logging    = true
 }
 
 #
