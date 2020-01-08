@@ -31,9 +31,3 @@ variable "enable_bucket_inventory" {
   default     = false
   description = "If set to true, Bucket Inventory will be enabled."
 }
-
-variable "enable_bucket_logging" {
-  description = "When enabled, logging for an S3 bucket will be configured."
-  default     = true
-  type        = bool
-}

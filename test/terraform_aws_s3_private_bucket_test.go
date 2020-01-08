@@ -181,37 +181,6 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 	return nil
 }
 
-func AssertS3BucketLoggingNotEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketLoggingNotEnabledE(t, region, bucketName)
-	require.NoError(t, err)
-}
-
-func AssertS3BucketLoggingNotEnabledE(t *testing.T, region string, bucketName string) error {
-	s3Client, err := aws.NewS3ClientE(t, region)
-
-	if err != nil {
-		return err
-	}
-
-	params := &s3.GetBucketLoggingInput{
-		Bucket: awssdk.String(bucketName),
-	}
-
-	bucketLogging, err := s3Client.GetBucketLogging(params)
-
-	if err != nil {
-		return err
-	}
-
-	loggingEnabled := bucketLogging.LoggingEnabled
-
-	if loggingEnabled != nil {
-		return fmt.Errorf("Logging is enabled")
-	}
-
-	return nil
-}
-
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
@@ -229,10 +198,9 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"test_name":             testName,
-			"logging_bucket":        loggingBucket,
-			"region":                awsRegion,
-			"enable_bucket_logging": true,
+			"test_name":      testName,
+			"logging_bucket": loggingBucket,
+			"region":         awsRegion,
 		},
 
 		// Environment variables to set when running Terraform
@@ -267,10 +235,9 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"test_name":             testName,
-			"logging_bucket":        loggingBucket,
-			"region":                awsRegion,
-			"enable_bucket_logging": true,
+			"test_name":      testName,
+			"logging_bucket": loggingBucket,
+			"region":         awsRegion,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -299,7 +266,6 @@ func TestTerraformAwsInventory(t *testing.T) {
 			"logging_bucket":          loggingBucket,
 			"region":                  awsRegion,
 			"enable_bucket_inventory": true,
-			"enable_bucket_logging":   true,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -316,42 +282,4 @@ func TestTerraformAwsInventory(t *testing.T) {
 
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
 
-}
-
-func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
-	t.Parallel()
-
-	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple-no-logging")
-
-	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
-	// in your AWS account
-	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-no-logging-%s", strings.ToLower(random.UniqueId()))
-	loggingBucket := fmt.Sprintf("%s-no-logs", testName)
-	awsRegion := "us-west-2"
-
-	terraformOptions := &terraform.Options{
-		// The path to where our Terraform code is located
-		TerraformDir: tempTestFolder,
-
-		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
-			"test_name":             testName,
-			"region":                awsRegion,
-			"logging_bucket":        loggingBucket,
-			"enable_bucket_logging": false,
-		},
-
-		// Environment variables to set when running Terraform
-		EnvVars: map[string]string{
-			"AWS_DEFAULT_REGION": awsRegion,
-		},
-	}
-
-	// At the end of the test, run `terraform destroy` to clean up any resources that were created
-	defer terraform.Destroy(t, terraformOptions)
-
-	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
-	terraform.InitAndApply(t, terraformOptions)
-
-	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
 }

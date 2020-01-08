@@ -9,8 +9,3 @@ variable "logging_bucket" {
 variable "region" {
   type = string
 }
-
-variable "enable_bucket_logging" {
-  type    = bool
-  default = true
-}
