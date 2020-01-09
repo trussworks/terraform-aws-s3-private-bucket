@@ -85,7 +85,7 @@ resource "aws_s3_bucket_inventory" "inventory" {
   included_object_versions = "All"
 
   schedule {
-    frequency = "Weekly"
+    frequency = var.schedule_frequency
   }
 
   destination {

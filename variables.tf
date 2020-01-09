@@ -31,3 +31,9 @@ variable "enable_bucket_inventory" {
   default     = false
   description = "If set to true, Bucket Inventory will be enabled."
 }
+
+variable "schedule_frequency" {
+  type        = string
+  default     = "Weekly"
+  description = "The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'."
+}

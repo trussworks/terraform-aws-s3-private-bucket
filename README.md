@@ -52,6 +52,7 @@ module "aws-s3-bucket" {
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | string | `""` | no |
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | bool | `"false"` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | string | n/a | yes |
+| schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | string | `"Weekly"` | no |
 | tags | A mapping of tags to assign to the bucket. | map(string) | `{}` | no |
 | use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | string | `"true"` | no |
 
