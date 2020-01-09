@@ -2,9 +2,8 @@ data "aws_iam_account_alias" "current" {
 }
 
 locals {
-  bucket_prefix       = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
-  bucket_id           = "${local.bucket_prefix}${var.bucket}"
-  inventory_bucket_id = "inventory-${local.bucket_prefix}${var.bucket}"
+  bucket_prefix = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
+  bucket_id     = "${local.bucket_prefix}${var.bucket}"
 }
 
 resource "aws_s3_bucket" "private_bucket" {
@@ -36,16 +35,6 @@ resource "aws_s3_bucket" "private_bucket" {
     }
   }
 
-  lifecycle_rule {
-    enabled = true
-
-    prefix = "_AWSBucketInventory/"
-
-    expiration {
-      days = 7
-    }
-  }
-
   dynamic "logging" {
     for_each = var.enable_bucket_logging ? [1] : []
     content {
@@ -63,7 +52,6 @@ resource "aws_s3_bucket" "private_bucket" {
   }
 }
 
-
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
   bucket = aws_s3_bucket.private_bucket.id
 
@@ -80,26 +68,3 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_inventory" "inventory" {
-  count = var.enable_bucket_inventory ? 1 : 0
-
-  bucket = aws_s3_bucket.private_bucket.id
-  name   = "WeeklyInventory"
-
-  included_object_versions = "All"
-
-  schedule {
-    frequency = "Weekly"
-  }
-
-  destination {
-    bucket {
-      format     = "ORC"
-      bucket_arn = aws_s3_bucket.private_bucket.arn
-      prefix     = "_AWSBucketInventory/"
-    }
-  }
-
-  optional_fields = ["Size", "LastModifiedDate", "StorageClass", "ETag", "IsMultipartUploaded", "ReplicationStatus", "EncryptionStatus",
-  "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus", "IntelligentTieringAccessTier"]
-}
