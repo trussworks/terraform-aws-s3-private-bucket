@@ -90,7 +90,7 @@ resource "aws_s3_bucket_inventory" "inventory" {
 
   destination {
     bucket {
-      format     = "ORC"
+      format     = var.inventory_bucket_format
       bucket_arn = aws_s3_bucket.private_bucket.arn
       prefix     = "_AWSBucketInventory/"
     }

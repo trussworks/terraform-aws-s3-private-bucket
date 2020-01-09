@@ -32,6 +32,12 @@ variable "enable_bucket_inventory" {
   description = "If set to true, Bucket Inventory will be enabled."
 }
 
+variable "inventory_bucket_format" {
+  type        = string
+  default     = "ORC"
+  description = "The format for the inventory file. Default is ORC. Options are ORC or CSV."
+}
+
 variable "schedule_frequency" {
   type        = string
   default     = "Weekly"
