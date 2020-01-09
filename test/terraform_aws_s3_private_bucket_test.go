@@ -254,7 +254,7 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 func TestTerraformAwsInventory(t *testing.T) {
 	t.Parallel()
 
-	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/custom-bucket-policy-inventory")
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/bucket-inventory")
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-inventory-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-inventory-logs", testName)
 	awsRegion := "us-west-2"
@@ -276,10 +276,6 @@ func TestTerraformAwsInventory(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
-	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
-
 	aws.AssertS3BucketExists(t, awsRegion, testName)
-
-	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
 
 }
