@@ -18,16 +18,11 @@ variable "custom_bucket_policy" {
 variable "logging_bucket" {
   description = "The S3 bucket to send S3 access logs."
   type        = string
+  default     = ""
 }
 
 variable "tags" {
   description = "A mapping of tags to assign to the bucket."
   default     = {}
   type        = map(string)
-}
-
-variable "enable_bucket_logging" {
-  description = "When enabled, logging for an S3 bucket will be configured."
-  default     = true
-  type        = bool
 }

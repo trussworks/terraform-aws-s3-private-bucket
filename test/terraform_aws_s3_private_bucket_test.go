@@ -267,10 +267,9 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"test_name":             testName,
-			"logging_bucket":        loggingBucket,
-			"region":                awsRegion,
-			"enable_bucket_logging": true,
+			"test_name":      testName,
+			"logging_bucket": loggingBucket,
+			"region":         awsRegion,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -301,10 +300,9 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"test_name":             testName,
-			"region":                awsRegion,
-			"logging_bucket":        loggingBucket,
-			"enable_bucket_logging": false,
+			"test_name":      testName,
+			"region":         awsRegion,
+			"logging_bucket": loggingBucket,
 		},
 
 		// Environment variables to set when running Terraform
