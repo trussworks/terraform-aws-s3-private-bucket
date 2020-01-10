@@ -290,7 +290,6 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
 	// in your AWS account
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-no-logging-%s", strings.ToLower(random.UniqueId()))
-	loggingBucket := fmt.Sprintf("%s-no-logs", testName)
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
