@@ -181,6 +181,37 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 	return nil
 }
 
+func AssertS3BucketLoggingNotEnabled(t *testing.T, region string, bucketName string) {
+	err := AssertS3BucketLoggingNotEnabledE(t, region, bucketName)
+	require.NoError(t, err)
+}
+
+func AssertS3BucketLoggingNotEnabledE(t *testing.T, region string, bucketName string) error {
+	s3Client, err := aws.NewS3ClientE(t, region)
+
+	if err != nil {
+		return err
+	}
+
+	params := &s3.GetBucketLoggingInput{
+		Bucket: awssdk.String(bucketName),
+	}
+
+	bucketLogging, err := s3Client.GetBucketLogging(params)
+
+	if err != nil {
+		return err
+	}
+
+	loggingEnabled := bucketLogging.LoggingEnabled
+
+	if loggingEnabled != nil {
+		return fmt.Errorf("Logging is enabled")
+	}
+
+	return nil
+}
+
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
@@ -267,6 +298,18 @@ func TestTerraformAwsInventory(t *testing.T) {
 			"region":                  awsRegion,
 			"enable_bucket_inventory": true,
 		},
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
+	}
+
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketExists(t, awsRegion, testName)
+
+}
 
 func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	t.Parallel()
