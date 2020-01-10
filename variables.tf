@@ -18,6 +18,7 @@ variable "custom_bucket_policy" {
 variable "logging_bucket" {
   description = "The S3 bucket to send S3 access logs."
   type        = string
+  default     = ""
 }
 
 variable "tags" {
@@ -25,4 +26,3 @@ variable "tags" {
   default     = {}
   type        = map(string)
 }
-
