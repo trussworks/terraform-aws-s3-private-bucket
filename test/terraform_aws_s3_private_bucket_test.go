@@ -300,7 +300,6 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 		Vars: map[string]interface{}{
 			"test_name":      testName,
 			"region":         awsRegion,
-			"logging_bucket": loggingBucket,
 		},
 
 		// Environment variables to set when running Terraform
