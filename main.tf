@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "private_bucket" {
     prefix = "_AWSBucketInventory/"
 
     expiration {
-      days = 7
+      days = 14
     }
   }
 
