@@ -10,7 +10,3 @@ variable "region" {
   type = string
 }
 
-variable "enable_bucket_logging" {
-  type    = bool
-  default = true
-}
