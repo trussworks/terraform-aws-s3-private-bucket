@@ -80,7 +80,7 @@ resource "aws_s3_bucket_inventory" "inventory" {
   count = var.enable_bucket_inventory ? 1 : 0
 
   bucket = aws_s3_bucket.private_bucket.id
-  name   = "WeeklyInventory"
+  name   = "BucketInventory"
 
   included_object_versions = "All"
 
