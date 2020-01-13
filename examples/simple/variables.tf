@@ -9,4 +9,3 @@ variable "logging_bucket" {
 variable "region" {
   type = string
 }
-

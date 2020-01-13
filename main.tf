@@ -36,6 +36,16 @@ resource "aws_s3_bucket" "private_bucket" {
     }
   }
 
+  lifecycle_rule {
+    enabled = true
+
+    prefix = "_AWSBucketInventory/"
+
+    expiration {
+      days = 14
+    }
+  }
+
   dynamic "logging" {
     for_each = local.enable_bucket_logging ? [1] : []
     content {
@@ -69,3 +79,26 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_inventory" "inventory" {
+  count = var.enable_bucket_inventory ? 1 : 0
+
+  bucket = aws_s3_bucket.private_bucket.id
+  name   = "BucketInventory"
+
+  included_object_versions = "All"
+
+  schedule {
+    frequency = var.schedule_frequency
+  }
+
+  destination {
+    bucket {
+      format     = var.inventory_bucket_format
+      bucket_arn = aws_s3_bucket.private_bucket.arn
+      prefix     = "_AWSBucketInventory/"
+    }
+  }
+
+  optional_fields = ["Size", "LastModifiedDate", "StorageClass", "ETag", "IsMultipartUploaded", "ReplicationStatus", "EncryptionStatus",
+  "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus", "IntelligentTieringAccessTier"]
+}

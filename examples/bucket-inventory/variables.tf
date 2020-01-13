@@ -9,3 +9,8 @@ variable "logging_bucket" {
 variable "region" {
   type = string
 }
+
+variable "enable_bucket_inventory" {
+  type    = bool
+  default = false
+}

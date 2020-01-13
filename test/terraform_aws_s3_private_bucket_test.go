@@ -282,6 +282,35 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
 }
 
+func TestTerraformAwsInventory(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/bucket-inventory")
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-inventory-%s", strings.ToLower(random.UniqueId()))
+	loggingBucket := fmt.Sprintf("%s-inventory-logs", testName)
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: tempTestFolder,
+		Vars: map[string]interface{}{
+			"test_name":               testName,
+			"logging_bucket":          loggingBucket,
+			"region":                  awsRegion,
+			"enable_bucket_inventory": true,
+		},
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
+	}
+
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketExists(t, awsRegion, testName)
+
+}
+
 func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	t.Parallel()
 
@@ -307,6 +336,12 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
 	}
+
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketExists(t, awsRegion, testName)
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

@@ -26,3 +26,21 @@ variable "tags" {
   default     = {}
   type        = map(string)
 }
+
+variable "enable_bucket_inventory" {
+  type        = bool
+  default     = false
+  description = "If set to true, Bucket Inventory will be enabled."
+}
+
+variable "inventory_bucket_format" {
+  type        = string
+  default     = "ORC"
+  description = "The format for the inventory file. Default is ORC. Options are ORC or CSV."
+}
+
+variable "schedule_frequency" {
+  type        = string
+  default     = "Weekly"
+  description = "The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'."
+}
