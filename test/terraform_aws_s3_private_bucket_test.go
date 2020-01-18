@@ -2,8 +2,6 @@ package test
 
 import (
 	"fmt"
-	"os/exec"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -11,10 +9,10 @@ import (
 	awssdk "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gruntwork-io/terratest/modules/aws"
-	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/require"
 )
 
@@ -183,54 +181,57 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 	return nil
 }
 
-func isTerraformVersion(t *testing.T, version string) (bool, error) {
-	cmd := exec.Command("terraform", "version")
-	out, err := cmd.CombinedOutput()
+func AssertS3BucketLoggingNotEnabled(t *testing.T, region string, bucketName string) {
+	err := AssertS3BucketLoggingNotEnabledE(t, region, bucketName)
+	require.NoError(t, err)
+}
+
+func AssertS3BucketLoggingNotEnabledE(t *testing.T, region string, bucketName string) error {
+	s3Client, err := aws.NewS3ClientE(t, region)
+
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	matched, err := regexp.Match(fmt.Sprintf("Terraform v%s", version), out)
-	if err != nil {
-		return false, err
+	params := &s3.GetBucketLoggingInput{
+		Bucket: awssdk.String(bucketName),
 	}
-	return matched, nil
+
+	bucketLogging, err := s3Client.GetBucketLogging(params)
+
+	if err != nil {
+		return err
+	}
+
+	loggingEnabled := bucketLogging.LoggingEnabled
+
+	if loggingEnabled != nil {
+		return fmt.Errorf("Logging is enabled")
+	}
+
+	return nil
 }
 
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple")
+
 	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
 	// in your AWS account
-	expectedName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
-
-	expectedLoggingBucket := fmt.Sprintf("terratest-aws-s3-logging-%s", strings.ToLower(random.UniqueId()))
-
-	customBucketPolicy := fmt.Sprintf("{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ses.amazonaws.com\"},\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::%s/*\"}]}", expectedName)
-
-	// The custom bucket policy must be wrapped in quotes for Terraform 11, but not for Terraform 12
-	matched, err := isTerraformVersion(t, "0.11")
-	if err != nil {
-		logger.Log(t, err)
-		return
-	}
-	if matched {
-		customBucketPolicy = fmt.Sprintf("%q", customBucketPolicy)
-	}
-
-	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
-	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
+	loggingBucket := fmt.Sprintf("%s-logs", testName)
+	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../",
+		TerraformDir: tempTestFolder,
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"bucket":                   expectedName,
-			"logging_bucket":           expectedLoggingBucket,
-			"custom_bucket_policy":     customBucketPolicy,
-			"use_account_alias_prefix": false,
+			"test_name":      testName,
+			"logging_bucket": loggingBucket,
+			"region":         awsRegion,
 		},
 
 		// Environment variables to set when running Terraform
@@ -242,39 +243,111 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
 
-	// Create temporary logging bucket for s3 bucket module
-	s3Client, err := aws.NewS3ClientE(t, awsRegion)
-	if err != nil {
-		logger.Log(t, err)
-		return
+	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
+	terraform.InitAndApply(t, terraformOptions)
+
+	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
+	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
+	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
+	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
+	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
+	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
+	AssertS3BucketLoggingEnabled(t, awsRegion, testName, loggingBucket)
+}
+
+func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/custom-bucket-policy")
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
+	loggingBucket := fmt.Sprintf("%s-logs", testName)
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: tempTestFolder,
+		Vars: map[string]interface{}{
+			"test_name":      testName,
+			"logging_bucket": loggingBucket,
+			"region":         awsRegion,
+		},
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
 	}
 
-	params := &s3.CreateBucketInput{
-		Bucket: awssdk.String(expectedLoggingBucket),
-		ACL:    awssdk.String("log-delivery-write"),
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
+}
+
+func TestTerraformAwsInventory(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/bucket-inventory")
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-inventory-%s", strings.ToLower(random.UniqueId()))
+	loggingBucket := fmt.Sprintf("%s-inventory-logs", testName)
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: tempTestFolder,
+		Vars: map[string]interface{}{
+			"test_name":               testName,
+			"logging_bucket":          loggingBucket,
+			"region":                  awsRegion,
+			"enable_bucket_inventory": true,
+		},
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
 	}
 
-	_, err = s3Client.CreateBucket(params)
-	if err != nil {
-		logger.Log(t, err)
-		return
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketExists(t, awsRegion, testName)
+
+}
+
+func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple-no-logging")
+
+	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
+	// in your AWS account
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-no-logging-%s", strings.ToLower(random.UniqueId()))
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		// The path to where our Terraform code is located
+		TerraformDir: tempTestFolder,
+
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"test_name": testName,
+			"region":    awsRegion,
+		},
+
+		// Environment variables to set when running Terraform
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
 	}
 
-	// Clean up tempoary logging bucket at end of test
-	defer aws.DeleteS3Bucket(t, awsRegion, expectedLoggingBucket)
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketExists(t, awsRegion, testName)
+
+	// At the end of the test, run `terraform destroy` to clean up any resources that were created
+	defer terraform.Destroy(t, terraformOptions)
 
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
 
-	// Run `terraform output` to get the value of an output variable
-	bucketID := terraform.Output(t, terraformOptions, "id")
-
-	AssertS3BucketEncryptionEnabled(t, awsRegion, bucketID)
-	aws.AssertS3BucketVersioningExists(t, awsRegion, bucketID)
-	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, bucketID)
-	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, bucketID)
-	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, bucketID)
-	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, bucketID)
-	AssertS3BucketLoggingEnabled(t, awsRegion, bucketID, expectedLoggingBucket)
-	aws.AssertS3BucketPolicyExists(t, awsRegion, bucketID)
+	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
 }

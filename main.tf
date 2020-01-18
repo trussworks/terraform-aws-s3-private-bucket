@@ -1,48 +1,10 @@
-/**
- * Creates a private S3 bucket with good defaults:
- *
- * * Private only objects
- * * Encryption
- * * Versioning
- * * Access logging
- *
- * The following policy rules are set:
- *
- * * Deny uploading public objects.
- * * Deny updating policy to allow public objects.
- *
- * The following ACL rules are set:
- *
- * * Retroactively remove public access granted through public ACLs
- * * Deny updating ACL to public
- *
- * The following lifecycle rules are set:
- *
- * * Incomplete multipart uploads are deleted after 14 days.
- * * Expired object delete markers are deleted.
- * * Noncurrent object versions transition to the Standard - Infrequent Access storage class after 30 days.
- * * Noncurrent object versions expire after 365 days.
- *
- * ## Usage
- *
- *     module "aws-s3-bucket" {
- *       source         = "trussworks/s3-private-bucket/aws"
- *       bucket         = "my-bucket-name"
- *       logging_bucket = "my-aws-logs"
- *
- *       tags {
- *         Name        = "My bucket"
- *         Environment = "Dev"
- *       }
- *     }
- */
-
 data "aws_iam_account_alias" "current" {
 }
 
 locals {
-  bucket_prefix = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
-  bucket_id     = "${local.bucket_prefix}${var.bucket}"
+  bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
+  bucket_id             = "${local.bucket_prefix}${var.bucket}"
+  enable_bucket_logging = var.logging_bucket != ""
 }
 
 resource "aws_s3_bucket" "private_bucket" {
@@ -74,9 +36,22 @@ resource "aws_s3_bucket" "private_bucket" {
     }
   }
 
-  logging {
-    target_bucket = var.logging_bucket
-    target_prefix = "s3/${local.bucket_id}/"
+  lifecycle_rule {
+    enabled = true
+
+    prefix = "_AWSBucketInventory/"
+
+    expiration {
+      days = 14
+    }
+  }
+
+  dynamic "logging" {
+    for_each = local.enable_bucket_logging ? [1] : []
+    content {
+      target_bucket = var.logging_bucket
+      target_prefix = "s3/${local.bucket_id}/"
+    }
   }
 
   server_side_encryption_configuration {
@@ -104,3 +79,26 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_inventory" "inventory" {
+  count = var.enable_bucket_inventory ? 1 : 0
+
+  bucket = aws_s3_bucket.private_bucket.id
+  name   = "BucketInventory"
+
+  included_object_versions = "All"
+
+  schedule {
+    frequency = var.schedule_frequency
+  }
+
+  destination {
+    bucket {
+      format     = var.inventory_bucket_format
+      bucket_arn = aws_s3_bucket.private_bucket.arn
+      prefix     = "_AWSBucketInventory/"
+    }
+  }
+
+  optional_fields = ["Size", "LastModifiedDate", "StorageClass", "ETag", "IsMultipartUploaded", "ReplicationStatus", "EncryptionStatus",
+  "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus", "IntelligentTieringAccessTier"]
+}
