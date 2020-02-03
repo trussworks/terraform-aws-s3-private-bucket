@@ -48,7 +48,7 @@ module "aws-s3-bucket" {
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 2.37.0 |
 
 ## Inputs
 
