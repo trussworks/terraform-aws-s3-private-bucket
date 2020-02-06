@@ -36,7 +36,7 @@ module "aws-s3-bucket" {
   bucket         = "my-bucket-name"
   logging_bucket = "my-aws-logs"
 
-  tags {
+  tags = {
     Name        = "My bucket"
     Environment = "Dev"
   }
