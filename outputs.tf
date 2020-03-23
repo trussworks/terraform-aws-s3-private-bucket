@@ -8,6 +8,11 @@ output "arn" {
   value       = aws_s3_bucket.private_bucket.arn
 }
 
+output "name" {
+  description = "The Name of the bucket. Will be of format bucketprefix-bucketname."
+  value       = "${local.bucket_prefix}${var.bucket}"
+}
+
 output "bucket_domain_name" {
   description = "The bucket domain name."
   value       = aws_s3_bucket.private_bucket.bucket_domain_name
