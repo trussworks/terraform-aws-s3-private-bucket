@@ -71,6 +71,7 @@ module "aws-s3-bucket" {
 | bucket\_domain\_name | The bucket domain name. |
 | bucket\_regional\_domain\_name | The bucket region-specific domain name. |
 | id | The name of the bucket. |
+| name | The Name of the bucket. Will be of format bucketprefix-bucketname. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
