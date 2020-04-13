@@ -7,10 +7,43 @@ locals {
   enable_bucket_logging = var.logging_bucket != ""
 }
 
+#
+# Enforce SSL/TLS on all transmitted objects
+# We do this by extending the custom_bucket_policy
+#
+
+data "aws_iam_policy_document" "enforcetls" {
+
+  source_json = var.custom_bucket_policy
+
+  statement {
+    sid    = "enforce-tls-requests-only"
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = ["s3:*"]
+    resources = [
+      "${aws_s3_bucket.private_bucket.arn}/*"
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "my_bucket_policy" {
+  bucket = aws_s3_bucket.private_bucket.id
+  policy = data.aws_iam_policy_document.enforcetls.json
+}
+
+
 resource "aws_s3_bucket" "private_bucket" {
   bucket = local.bucket_id
   acl    = "private"
-  policy = var.custom_bucket_policy
   tags   = var.tags
 
   versioning {
