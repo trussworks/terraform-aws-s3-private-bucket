@@ -212,6 +212,24 @@ func AssertS3BucketLoggingNotEnabledE(t *testing.T, region string, bucketName st
 	return nil
 }
 
+func AssertS3BucketPolicyContainsNonTLSDeny(t *testing.T, region string, bucketName string) {
+	pattern := fmt.Sprintf(`{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`, bucketName)
+	err := AssertS3BucketPolicyContains(t, region, bucketName, pattern)
+	require.NoError(t, err)
+
+}
+
+func AssertS3BucketPolicyContains(t *testing.T, region string, bucketName string, pattern string) error {
+	policy, err := aws.GetS3BucketPolicyE(t, region, bucketName)
+	require.NoError(t, err)
+
+	if !strings.Contains(policy, pattern) {
+		return fmt.Errorf("could not find pattern: %s in policy: %s", pattern, policy)
+	}
+
+	return nil
+}
+
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
@@ -253,6 +271,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
 	AssertS3BucketLoggingEnabled(t, awsRegion, testName, loggingBucket)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
 
 func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
@@ -280,6 +299,7 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
 
 func TestTerraformAwsInventory(t *testing.T) {
@@ -308,6 +328,7 @@ func TestTerraformAwsInventory(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	aws.AssertS3BucketExists(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 
 }
 
@@ -350,4 +371,5 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
