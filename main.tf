@@ -1,5 +1,5 @@
-data "aws_iam_account_alias" "current" {
-}
+data "aws_iam_account_alias" "current" {}
+data "aws_partition" "current" {}
 
 locals {
   bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "enforce_tls" {
     }
     actions = ["s3:*"]
     resources = [
-      "${aws_s3_bucket.private_bucket.arn}/*"
+      "arn:${data.aws_partition.current.partition}:s3:::${local.bucket_id}/*"
     ]
     condition {
       test     = "Bool"
@@ -35,17 +35,11 @@ data "aws_iam_policy_document" "enforce_tls" {
   }
 }
 
-resource "aws_s3_bucket_policy" "bucket_policy" {
-  depends_on = [aws_s3_bucket_public_access_block.public_access_block]
-  bucket     = aws_s3_bucket.private_bucket.id
-  policy     = data.aws_iam_policy_document.enforce_tls.json
-}
-
-
 resource "aws_s3_bucket" "private_bucket" {
   bucket = local.bucket_id
   acl    = "private"
   tags   = var.tags
+  policy = data.aws_iam_policy_document.enforce_tls.json
 
   versioning {
     enabled = true
