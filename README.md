@@ -61,6 +61,7 @@ module "aws-s3-bucket" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| analytics\_bucket | The ARN of the analytics bucket. Leave blank to disable. | `string` | `""` | no |
 | bucket | The name of the bucket. | `string` | n/a | yes |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
