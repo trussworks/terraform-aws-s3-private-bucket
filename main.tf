@@ -130,3 +130,21 @@ resource "aws_s3_bucket_inventory" "inventory" {
   optional_fields = ["Size", "LastModifiedDate", "StorageClass", "ETag", "IsMultipartUploaded", "ReplicationStatus", "EncryptionStatus",
   "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus", "IntelligentTieringAccessTier"]
 }
+
+resource "aws_s3_bucket_analytics_configuration" "analytics" {
+  count  = var.analytics_bucket != "" ? 1 : 0
+  bucket = aws_s3_bucket.private_bucket.id
+  name   = "BucketAnalytics"
+
+  storage_class_analysis {
+    data_export {
+      destination {
+        s3_bucket_destination {
+          bucket_arn = var.analytics_bucket
+          prefix     = "s3-analytics/${local.bucket_id}/"
+        }
+      }
+    }
+  }
+}
+
