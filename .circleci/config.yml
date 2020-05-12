@@ -12,7 +12,7 @@ jobs:
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-            - go-mod-sources-v1-{{ checksum "go.sum" }}
+            - go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version" }}
       - run:
           name: Assume role and run terratest
           command: |
@@ -28,7 +28,7 @@ jobs:
           paths:
             - ~/.cache
       - save_cache:
-          key: go-mod-sources-v1-{{ checksum "go.sum" }}
+          key: go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version" }}
           paths:
             - "~/go/pkg/mod"
 
