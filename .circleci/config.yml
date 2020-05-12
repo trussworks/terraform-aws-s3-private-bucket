@@ -4,22 +4,6 @@ references:
   circleci_docker_primary: &circleci_docker_primary trussworks/circleci-docker-primary:c542b22c7fb95db0a1bbe043928a457ae6fbeaca
 
 jobs:
-  validate:
-    docker:
-      - image: *circleci_docker_primary
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-      - run:
-          name: Run pre-commit tests
-          command: make pre_commit_tests
-      - save_cache:
-          key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-          paths:
-            - ~/.cache
-
   terratest:
     docker:
       - image: *circleci_docker_primary
@@ -27,6 +11,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
+            - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
             - go-mod-sources-v1-{{ checksum "go.sum" }}
       - run:
           name: Assume role and run terratest
@@ -39,6 +24,10 @@ jobs:
             export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
             make test
       - save_cache:
+          key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
+          paths:
+            - ~/.cache
+      - save_cache:
           key: go-mod-sources-v1-{{ checksum "go.sum" }}
           paths:
             - "~/go/pkg/mod"
@@ -47,5 +36,4 @@ workflows:
   version: 2
   validate:
     jobs:
-      - validate
       - terratest
