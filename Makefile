@@ -15,3 +15,4 @@ test: pre_commit_tests
 .PHONY: clean
 clean:
 	rm -f .*.stamp
+	rm -f bin
