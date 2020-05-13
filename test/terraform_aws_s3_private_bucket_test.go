@@ -373,3 +373,87 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
+
+func AssertS3BucketAnalyticsEnabled(t *testing.T, region string, bucketName string, analyticsBucketName string) {
+	err := AssertS3BucketAnalyticsEnabledE(t, region, bucketName, analyticsBucketName)
+	require.NoError(t, err)
+}
+
+func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName string, analyticsBucketName string) error {
+	s3Client, err := aws.NewS3ClientE(t, region)
+
+	if err != nil {
+		return err
+	}
+
+	params := &s3.GetBucketAnalyticsConfigurationInput{
+		Bucket: awssdk.String(bucketName),
+	}
+
+	// from https://docs.aws.amazon.com/cli/latest/reference/s3api/get-bucket-analytics-configuration.html
+	bucketAnalytics, err := s3Client.GetBucketAnalyticsConfiguration(params)
+
+	if err != nil {
+		return err
+	}
+
+	analyticsEnabled := bucketAnalytics.AnalyticsConfiguration
+
+	if analyticsEnabled == nil {
+		return fmt.Errorf("Analytics not enabled")
+	}
+
+	// TODO: hit correct api to match actual to expected here
+	// actual := *analyticsEnabled.StorageClassAnalysis
+	// expected := analyticsEnabled
+
+	// if actual != expected {
+	// 	return fmt.Errorf("Analytics configuration does not match expected. Got: %v, Expected: %v", actual, expected)
+	// }
+
+	return nil
+}
+
+func TestTerraformAwsS3PrivateAnalyticsBucket(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple")
+
+	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
+	// in your AWS account
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
+	analyticsBucket := fmt.Sprintf("%s-logs", testName)
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		// The path to where our Terraform code is located
+		TerraformDir: tempTestFolder,
+
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"test_name":        testName,
+			"analytics_bucket": analyticsBucket,
+			"region":           awsRegion,
+		},
+
+		// Environment variables to set when running Terraform
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
+	}
+
+	// At the end of the test, run `terraform destroy` to clean up any resources that were created
+	defer terraform.Destroy(t, terraformOptions)
+
+	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
+	terraform.InitAndApply(t, terraformOptions)
+
+	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
+	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
+	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
+	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
+	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
+	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
+	AssertS3BucketAnalyticsEnabled(t, awsRegion, testName, analyticsBucket)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+}
