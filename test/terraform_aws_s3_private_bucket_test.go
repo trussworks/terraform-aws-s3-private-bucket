@@ -374,12 +374,12 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
 
-func AssertS3BucketAnalyticsNotEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketAnalyticsNotEnabledE(t, region, bucketName)
+func AssertS3BucketAnalyticsEnabled(t *testing.T, region string, bucketName string) {
+	err := AssertS3BucketAnalyticsEnabledE(t, region, bucketName)
 	require.NoError(t, err)
 }
 
-func AssertS3BucketAnalyticsNotEnabledE(t *testing.T, region string, bucketName string) error {
+func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName string) error {
 	s3Client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
@@ -405,7 +405,7 @@ func AssertS3BucketAnalyticsNotEnabledE(t *testing.T, region string, bucketName 
 	return nil
 }
 
-func TestTerraformAwsS3PrivateBucketNoAnalyticsBucket(t *testing.T) {
+func TestTerraformAwsS3PrivateBucketAnalyticsBucket(t *testing.T) {
 	t.Parallel()
 
 	// TODO: create & hook tests below to tempTestFolder /examples/analytics after logging module connected
@@ -445,90 +445,6 @@ func TestTerraformAwsS3PrivateBucketNoAnalyticsBucket(t *testing.T) {
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
 
-	AssertS3BucketAnalyticsNotEnabled(t, awsRegion, testName)
+	AssertS3BucketAnalyticsEnabled(t, awsRegion, testName)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
-
-// func AssertS3BucketAnalyticsEnabled(t *testing.T, region string, bucketName string, analyticsBucketName string) {
-// 	err := AssertS3BucketAnalyticsEnabledE(t, region, bucketName, analyticsBucketName)
-// 	require.NoError(t, err)
-// }
-
-// func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName string, analyticsBucketName string) error {
-// 	s3Client, err := aws.NewS3ClientE(t, region)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	params := &s3.ListBucketAnalyticsConfigurationsInput{
-// 		Bucket: awssdk.String(bucketName),
-// 	}
-
-// 	// from https://docs.aws.amazon.com/cli/latest/reference/s3api/get-bucket-analytics-configuration.html
-// 	bucketAnalytics, err := s3Client.ListBucketAnalyticsConfigurations(params)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	analyticsEnabled := bucketAnalytics.IsTruncated
-
-// 	if analyticsEnabled == nil {
-// 		return fmt.Errorf("Analytics not enabled")
-// 	}
-
-// 	actual := true
-// 	expected := *analyticsEnabled
-
-// 	if actual != expected {
-// 		return fmt.Errorf("Analytics configuration does not match expected. Got: %v, Expected: %v", actual, expected)
-// 	}
-
-// 	return nil
-// }
-
-// func TestTerraformAwsS3PrivateAnalyticsBucket(t *testing.T) {
-// 	t.Parallel()
-
-// 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/analytics")
-
-// 	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
-// 	// in your AWS account
-// 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
-// 	analyticsBucket := fmt.Sprintf("%s-analytics", testName)
-// 	awsRegion := "us-west-2"
-
-// 	terraformOptions := &terraform.Options{
-// 		// The path to where our Terraform code is located
-// 		TerraformDir: tempTestFolder,
-
-// 		// Variables to pass to our Terraform code using -var options
-// 		Vars: map[string]interface{}{
-// 			"test_name":        testName,
-// 			"analytics_bucket": analyticsBucket,
-// 			"region":           awsRegion,
-// 		},
-
-// 		// Environment variables to set when running Terraform
-// 		EnvVars: map[string]string{
-// 			"AWS_DEFAULT_REGION": awsRegion,
-// 		},
-// 	}
-
-// 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
-// 	defer terraform.Destroy(t, terraformOptions)
-
-// 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
-// 	terraform.InitAndApply(t, terraformOptions)
-
-// 	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
-// 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
-// 	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
-// 	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
-// 	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
-// 	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
-// 	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
-// 	AssertS3BucketAnalyticsEnabled(t, awsRegion, testName, analyticsBucket)
-// 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
-// }
