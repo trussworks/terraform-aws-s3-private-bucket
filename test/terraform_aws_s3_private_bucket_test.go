@@ -398,8 +398,8 @@ func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName str
 
 	analyticsEnabled := bucketAnalytics.IsTruncated
 
-	if analyticsEnabled != nil {
-		return fmt.Errorf("Analytics is enabled")
+	if analyticsEnabled == nil {
+		return fmt.Errorf("Analytics is not enabled")
 	}
 
 	return nil
