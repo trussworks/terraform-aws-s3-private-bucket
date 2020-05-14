@@ -386,30 +386,29 @@ func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName str
 		return err
 	}
 
-	params := &s3.GetBucketAnalyticsConfigurationInput{
+	params := &s3.ListBucketAnalyticsConfigurationsInput{
 		Bucket: awssdk.String(bucketName),
 	}
 
 	// from https://docs.aws.amazon.com/cli/latest/reference/s3api/get-bucket-analytics-configuration.html
-	bucketAnalytics, err := s3Client.GetBucketAnalyticsConfiguration(params)
+	bucketAnalytics, err := s3Client.ListBucketAnalyticsConfigurations(params)
 
 	if err != nil {
 		return err
 	}
 
-	analyticsEnabled := bucketAnalytics.AnalyticsConfiguration
+	analyticsEnabled := bucketAnalytics.IsTruncated
 
 	if analyticsEnabled == nil {
 		return fmt.Errorf("Analytics not enabled")
 	}
 
-	// TODO: hit correct api to match actual to expected here
-	// actual := *analyticsEnabled.StorageClassAnalysis
-	// expected := analyticsEnabled
+	actual := true
+	expected := *analyticsEnabled
 
-	// if actual != expected {
-	// 	return fmt.Errorf("Analytics configuration does not match expected. Got: %v, Expected: %v", actual, expected)
-	// }
+	if actual != expected {
+		return fmt.Errorf("Analytics configuration does not match expected. Got: %v, Expected: %v", actual, expected)
+	}
 
 	return nil
 }
@@ -417,12 +416,12 @@ func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName str
 func TestTerraformAwsS3PrivateAnalyticsBucket(t *testing.T) {
 	t.Parallel()
 
-	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple")
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/analytics")
 
 	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
 	// in your AWS account
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
-	analyticsBucket := fmt.Sprintf("%s-logs", testName)
+	analyticsBucket := fmt.Sprintf("%s-analytics", testName)
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
@@ -448,12 +447,13 @@ func TestTerraformAwsS3PrivateAnalyticsBucket(t *testing.T) {
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
 
-	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
-	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
-	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
-	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
-	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
-	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
+	// AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
+	// aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
+	// AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
+	// AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
+	// AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
+	// AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
+	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
 	AssertS3BucketAnalyticsEnabled(t, awsRegion, testName, analyticsBucket)
-	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+	// AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
