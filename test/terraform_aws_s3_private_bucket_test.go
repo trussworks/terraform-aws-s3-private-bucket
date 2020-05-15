@@ -386,17 +386,17 @@ func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName str
 		return err
 	}
 
-	params := &s3.ListBucketAnalyticsConfigurationsInput{
+	params := &s3.GetBucketAnalyticsConfigurationInput{
 		Bucket: awssdk.String(bucketName),
 	}
 
-	bucketAnalytics, err := s3Client.ListBucketAnalyticsConfigurations(params)
+	bucketAnalytics, err := s3Client.GetBucketAnalyticsConfiguration(params)
 
 	if err != nil {
 		return err
 	}
 
-	analyticsEnabled := bucketAnalytics.IsTruncated
+	analyticsEnabled := bucketAnalytics.AnalyticsConfiguration
 
 	if analyticsEnabled == nil {
 		return fmt.Errorf("Analytics is not enabled")
@@ -405,7 +405,7 @@ func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName str
 	return nil
 }
 
-func TestTerraformAwsS3PrivateBucketAnalyticsBucket(t *testing.T) {
+func TestTerraformAwsS3PrivateBucketNoAnalyticsBucket(t *testing.T) {
 	t.Parallel()
 
 	// TODO: create & hook tests below to tempTestFolder /examples/analytics after logging module connected
@@ -432,10 +432,6 @@ func TestTerraformAwsS3PrivateBucketAnalyticsBucket(t *testing.T) {
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
 	}
-
-	defer terraform.Destroy(t, terraformOptions)
-
-	terraform.InitAndApply(t, terraformOptions)
 
 	aws.AssertS3BucketExists(t, awsRegion, testName)
 
