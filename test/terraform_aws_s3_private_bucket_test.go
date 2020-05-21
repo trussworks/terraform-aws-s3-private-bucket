@@ -386,20 +386,20 @@ func AssertS3BucketAnalyticsNotEnabledE(t *testing.T, region string, bucketName 
 		return err
 	}
 
-	params := &s3.GetBucketAnalyticsConfigurationInput{
+	params := &s3.ListBucketAnalyticsConfigurationsInput{
 		Bucket: awssdk.String(bucketName),
 	}
 
-	bucketAnalytics, err := s3client.GetBucketAnalyticsConfiguration(params)
+	bucketAnalytics, err := s3client.ListBucketAnalyticsConfigurations(params)
 
 	if err != nil {
 		return err
 	}
 
-	analyticsEnabled := bucketAnalytics.AnalyticsConfiguration
+	analytics := bucketAnalytics.AnalyticsConfigurationList
 
-	if analyticsEnabled == nil {
-		return fmt.Errorf("Analytics is not enabled")
+	if len(analytics) != 0 {
+		return fmt.Errorf("Analytics is enabled")
 	}
 
 	return nil
