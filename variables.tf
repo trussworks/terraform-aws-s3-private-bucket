@@ -44,3 +44,9 @@ variable "schedule_frequency" {
   default     = "Weekly"
   description = "The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'."
 }
+
+variable "analytics_bucket" {
+  type        = string
+  default     = ""
+  description = "The ARN of the analytics bucket. Leave blank to disable."
+}
