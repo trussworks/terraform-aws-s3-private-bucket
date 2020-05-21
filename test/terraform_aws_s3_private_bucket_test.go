@@ -405,14 +405,14 @@ func AssertS3BucketAnalyticsNotEnabledE(t *testing.T, region string, bucketName 
 	return nil
 }
 
-func TestTerraformAwsS3PrivateBucketNoLoggingNoAnalytics(t *testing.T) {
+func TestTerraformAwsS3PrivateBucketNoAnalytics(t *testing.T) {
 	t.Parallel()
 
-	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple-no-logging")
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/simple-no-analytics")
 
 	// Give this S3 Bucket a unique ID for a name tag so we can distinguish it from any other Buckets provisioned
 	// in your AWS account
-	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-no-logging-no-analytics-%s", strings.ToLower(random.UniqueId()))
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-no-analytics-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
@@ -444,6 +444,5 @@ func TestTerraformAwsS3PrivateBucketNoLoggingNoAnalytics(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	AssertS3BucketAnalyticsNotEnabled(t, awsRegion, testName)
-	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
