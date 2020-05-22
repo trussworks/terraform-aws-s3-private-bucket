@@ -1,33 +1,26 @@
 version: 2
 
 references:
-  circleci_docker_primary: &circleci_docker_primary trussworks/circleci-docker-primary:3d70af4b3491a7b773ae36ddfc6a1acf71cd92d2
+  circleci_docker_primary: &circleci_docker_primary trussworks/circleci-docker-primary:c542b22c7fb95db0a1bbe043928a457ae6fbeaca
 
 jobs:
-  validate:
+  terratest:
     docker:
       - image: *circleci_docker_primary
+        environment:
+        - TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
+            - go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version" }}
       - run:
-          name: Run pre-commit tests
-          command: make pre_commit_tests
-      - save_cache:
-          key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-          paths:
-            - ~/.cache
-
-  terratest:
-    docker:
-      - image: *circleci_docker_primary
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-sources-v1-{{ checksum "go.sum" }}
+          name: Adding go binaries to $PATH
+          command: |
+            echo 'export PATH=${PATH}:~/go/bin' >> $BASH_ENV
+            source $BASH_ENV
+      - run: go get github.com/jstemmer/go-junit-report
       - run:
           name: Assume role and run terratest
           command: |
@@ -39,13 +32,18 @@ jobs:
             export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
             make test
       - save_cache:
-          key: go-mod-sources-v1-{{ checksum "go.sum" }}
+          key: pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version" }}
           paths:
             - "~/go/pkg/mod"
+      - store_test_results:
+          path: /tmp/test-results/gotest
 
 workflows:
   version: 2
   validate:
     jobs:
-      - validate
       - terratest
