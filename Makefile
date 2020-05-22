@@ -10,8 +10,9 @@ pre_commit_tests: ensure_pre_commit ## Run pre-commit tests
 
 .PHONY: test
 test: pre_commit_tests
-	go test -count 1 -v -timeout 90m ./test/...
+	bin/make-test
 
 .PHONY: clean
 clean:
 	rm -f .*.stamp
+	rm -f bin
