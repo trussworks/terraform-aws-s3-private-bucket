@@ -9,3 +9,7 @@ variable "logging_bucket" {
 variable "region" {
   type = string
 }
+
+variable "enable_analytics" {
+  type = bool
+}
