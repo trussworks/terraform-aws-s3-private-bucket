@@ -50,13 +50,13 @@ module "aws-s3-bucket" {
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12 |
-| aws | >= 2.37.0 |
+| aws | >= 2.49.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.37.0 |
+| aws | >= 2.49.0 |
 
 ## Inputs
 
