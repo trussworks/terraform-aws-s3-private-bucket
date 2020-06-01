@@ -74,6 +74,16 @@ resource "aws_s3_bucket" "private_bucket" {
     }
   }
 
+  lifecycle_rule {
+    enabled = true
+
+    prefix = "/_AWSBucketAnalytics"
+
+    expiration {
+      days = 30
+    }
+  }
+
   dynamic "logging" {
     for_each = local.enable_bucket_logging ? [1] : []
     content {
@@ -86,6 +96,23 @@ resource "aws_s3_bucket" "private_bucket" {
     rule {
       apply_server_side_encryption_by_default {
         sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
+  count  = enable_analytics ? 1 : 0
+  bucket = aws_s3_bucket.private_bucket.bucket
+  name   = "Analytics"
+
+  storage_class_analysis {
+    data_export {
+      destination {
+        s3_bucket_destination {
+          bucket_arn = aws_s3_bucket.private_bucket.arn
+          prefix     = "/_AWSBucketAnalytics"
+        }
       }
     }
   }
