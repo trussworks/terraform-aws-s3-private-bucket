@@ -63,6 +63,7 @@ module "aws-s3-bucket" {
 |------|-------------|------|---------|:--------:|
 | bucket | The name of the bucket. | `string` | n/a | yes |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
+| enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |

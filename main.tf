@@ -102,7 +102,7 @@ resource "aws_s3_bucket" "private_bucket" {
 }
 
 resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
-  count  = enable_analytics ? 1 : 0
+  count  = var.enable_analytics ? 1 : 0
   bucket = aws_s3_bucket.private_bucket.bucket
   name   = "Analytics"
 
