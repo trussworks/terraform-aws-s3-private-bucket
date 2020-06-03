@@ -1,21 +1,20 @@
 data "aws_iam_account_alias" "current" {}
 data "aws_partition" "current" {}
-
+data "aws_caller_identity" "current" {}
 locals {
   bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
   bucket_id             = "${local.bucket_prefix}${var.bucket}"
   enable_bucket_logging = var.logging_bucket != ""
 }
 
-#
-# Enforce SSL/TLS on all transmitted objects
-# We do this by extending the custom_bucket_policy
-#
-
-data "aws_iam_policy_document" "enforce_tls" {
+data "aws_iam_policy_document" "supplemental_policy" {
 
   source_json = var.custom_bucket_policy
 
+  #
+  # Enforce SSL/TLS on all transmitted objects
+  # We do this by extending the custom_bucket_policy
+  #
   statement {
     sid    = "enforce-tls-requests-only"
     effect = "Deny"
@@ -33,13 +32,41 @@ data "aws_iam_policy_document" "enforce_tls" {
       values   = ["false"]
     }
   }
+
+  statement {
+    sid    = "inventory-and-analytics"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+    actions = ["s3:PutObject"]
+    resources = [
+      "arn:${data.aws_partition.current.partition}:s3:::${local.bucket_id}/*"
+    ]
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:${data.aws_partition.current.partition}:s3:::${local.bucket_id}"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+  }
 }
 
 resource "aws_s3_bucket" "private_bucket" {
   bucket = local.bucket_id
   acl    = "private"
   tags   = var.tags
-  policy = data.aws_iam_policy_document.enforce_tls.json
+  policy = data.aws_iam_policy_document.supplemental_policy.json
 
   versioning {
     enabled = true
