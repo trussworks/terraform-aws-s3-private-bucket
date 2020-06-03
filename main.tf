@@ -104,7 +104,7 @@ resource "aws_s3_bucket" "private_bucket" {
   lifecycle_rule {
     enabled = true
 
-    prefix = "/_AWSBucketAnalytics"
+    prefix = "_AWSBucketAnalytics/"
 
     expiration {
       days = 30
