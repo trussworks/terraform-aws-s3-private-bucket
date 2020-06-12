@@ -45,42 +45,43 @@ module "aws-s3-bucket" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12 |
-| aws | >= 2.49.0 |
+| Name      | Version   |
+| --------- | --------- |
+| terraform | >= 0.12   |
+| aws       | >= 2.49.0 |
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| aws | >= 2.49.0 |
+| Name | Version   |
+| ---- | --------- |
+| aws  | >= 2.49.0 |
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| bucket | The name of the bucket. | `string` | n/a | yes |
-| custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
-| enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
-| enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
-| inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
-| logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
-| schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
-| tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
-| use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
+| Name                     | Description                                                                             | Type          | Default    | Required |
+| ------------------------ | --------------------------------------------------------------------------------------- | ------------- | ---------- | :------: |
+| bucket                   | The name of the bucket.                                                                 | `string`      | n/a        |   yes    |
+| custom_bucket_policy     | JSON formatted bucket policy to attach to the bucket.                                   | `string`      | `""`       |    no    |
+| enable_analytics         | Enables storage class analytics on the bucket.                                          | `bool`        | `true`     |    no    |
+| enable_bucket_inventory  | If set to true, Bucket Inventory will be enabled.                                       | `bool`        | `false`    |    no    |
+| inventory_bucket_format  | The format for the inventory file. Default is ORC. Options are ORC or CSV.              | `string`      | `"ORC"`    |    no    |
+| logging_bucket           | The S3 bucket to send S3 access logs.                                                   | `string`      | `""`       |    no    |
+| schedule_frequency       | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string`      | `"Weekly"` |    no    |
+| tags                     | A mapping of tags to assign to the bucket.                                              | `map(string)` | `{}`       |    no    |
+| use_account_alias_prefix | Whether to prefix the bucket name with the AWS account alias.                           | `string`      | `true`     |    no    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| arn | The ARN of the bucket. Will be of format arn:aws:s3:::bucketname. |
-| bucket\_domain\_name | The bucket domain name. |
-| bucket\_regional\_domain\_name | The bucket region-specific domain name. |
-| id | The name of the bucket. |
-| name | The Name of the bucket. Will be of format bucketprefix-bucketname. |
+| Name                        | Description                                                        |
+| --------------------------- | ------------------------------------------------------------------ |
+| arn                         | The ARN of the bucket. Will be of format arn:aws:s3:::bucketname.  |
+| bucket_domain_name          | The bucket domain name.                                            |
+| bucket_regional_domain_name | The bucket region-specific domain name.                            |
+| id                          | The name of the bucket.                                            |
+| name                        | The Name of the bucket. Will be of format bucketprefix-bucketname. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
@@ -111,6 +112,8 @@ AWS_VAULT_KEYCHAIN_NAME=<NAME> aws-vault exec <PROFILE> -- make test
 ## CHANGELOG
 
 This terraform module is undergoing an experiment where we keep a CHANGELOG for it. We're still trying to figure out how to automate this process and, for now, are manually running the command.
+
+The changelog should be updated every time a new GitHub release is cut.
 
 To do so, you should have a Github token with "repo" scope that can be loaded in as an environment variable. You can find more info [here](https://github.com/github-changelog-generator/github-changelog-generator#github-token).
 
