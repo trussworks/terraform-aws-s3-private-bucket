@@ -1,38 +1,38 @@
 repos:
-    -   repo: local
-        hooks:
-        -   id: go-version
-            name: go version
-            entry: bin/check-go-version
-            language: script
-            types: [go]
+  - repo: local
+    hooks:
+      - id: go-version
+        name: go version
+        entry: bin/check-go-version
+        language: script
+        types: [go]
 
-    -   repo: git://github.com/pre-commit/pre-commit-hooks
-        rev: v2.5.0
-        hooks:
-        -   id: check-json
-        -   id: check-merge-conflict
-        -   id: check-yaml
-        -   id: detect-private-key
-        -   id: pretty-format-json
-            args:
-            - --autofix
-        -   id: trailing-whitespace
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v2.5.0
+    hooks:
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: detect-private-key
+      - id: pretty-format-json
+        args:
+          - --autofix
+      - id: trailing-whitespace
 
-    -   repo: git://github.com/golangci/golangci-lint
-        rev: v1.24.0
-        hooks:
-          - id: golangci-lint
-            entry: golangci-lint run --verbose
-            verbose: true
+  - repo: git://github.com/golangci/golangci-lint
+    rev: v1.24.0
+    hooks:
+      - id: golangci-lint
+        entry: golangci-lint run --verbose
+        verbose: true
 
-    -   repo: git://github.com/antonbabenko/pre-commit-terraform
-        rev: v1.29.0
-        hooks:
-        - id: terraform_docs
-        - id: terraform_fmt
+  - repo: git://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.29.0
+    hooks:
+      - id: terraform_docs
+      - id: terraform_fmt
 
-    -   repo: git://github.com/igorshubovych/markdownlint-cli
-        rev: v0.22.0
-        hooks:
-        -   id: markdownlint
+  - repo: git://github.com/igorshubovych/markdownlint-cli
+    rev: v0.22.0
+    hooks:
+      - id: markdownlint
