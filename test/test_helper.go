@@ -35,7 +35,8 @@ func GetPublicAccessBlockConfigurationE(t *testing.T, terraformOptions *terrafor
 
 	var publicAccessBlockConfiguration *s3.PublicAccessBlockConfiguration
 	maxRetries := 3
-	retryDuration := 30 * time.Second
+
+	retryDuration := time.Duration(30)
 	_, err = retry.DoWithRetryE(t, "Get public access block configuration", maxRetries, retryDuration,
 		func() (string, error) {
 			publicAccessBlock, err := s3Client.GetPublicAccessBlock(params)
@@ -73,7 +74,7 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, terraformOptions *terraform.
 	}
 
 	maxRetries := 3
-	retryDuration := 30 * time.Second
+	retryDuration := time.Duration(30)
 	_, err = retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration,
 		func() (string, error) {
 			encryption, err := s3Client.GetBucketEncryption(params)
