@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/retry"
+	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
 )
 
@@ -93,7 +94,9 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, region string, bucketName st
 	return err
 }
 
-func AssertS3BucketBlockPublicACLEnabled(t *testing.T, region string, bucketName string) {
+func AssertS3BucketBlockPublicACLEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	region := terraformOptions.Vars["region"].(string)
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, region, bucketName, "BlockPublicAcls")
 	require.NoError(t, err)
 }

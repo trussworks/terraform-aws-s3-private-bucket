@@ -48,7 +48,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
-	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
+	AssertS3BucketBlockPublicACLEnabled(t, terraformOptions)
 	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
 	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
@@ -94,7 +94,7 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 
 	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
-	AssertS3BucketBlockPublicACLEnabled(t, awsRegion, testName)
+	AssertS3BucketBlockPublicACLEnabled(t, terraformOptions)
 	AssertS3BucketBlockPublicPolicyEnabled(t, awsRegion, testName)
 	AssertS3BucketIgnorePublicACLEnabled(t, awsRegion, testName)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, awsRegion, testName)
