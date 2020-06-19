@@ -95,28 +95,28 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, region string, bucketName st
 }
 
 func AssertS3BucketBlockPublicACLEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, terraformOptions, "BlockPublicAcls")
+	require.NoError(t, err)
+}
+
+func AssertS3BucketBlockPublicPolicyEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, terraformOptions, "BlockPublicPolicy")
+	require.NoError(t, err)
+}
+
+func AssertS3BucketIgnorePublicACLEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, terraformOptions, "IgnorePublicAcls")
+	require.NoError(t, err)
+}
+
+func AssertS3BucketRestrictPublicBucketsEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, terraformOptions, "RestrictPublicBuckets")
+	require.NoError(t, err)
+}
+
+func AssertS3BucketPublicAccessBlockConfigurationEnabledE(t *testing.T, terraformOptions *terraform.Options, configType string) error {
 	region := terraformOptions.Vars["region"].(string)
 	bucketName := terraformOptions.Vars["test_name"].(string)
-	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, region, bucketName, "BlockPublicAcls")
-	require.NoError(t, err)
-}
-
-func AssertS3BucketBlockPublicPolicyEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, region, bucketName, "BlockPublicPolicy")
-	require.NoError(t, err)
-}
-
-func AssertS3BucketIgnorePublicACLEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, region, bucketName, "IgnorePublicAcls")
-	require.NoError(t, err)
-}
-
-func AssertS3BucketRestrictPublicBucketsEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketPublicAccessBlockConfigurationEnabledE(t, region, bucketName, "RestrictPublicBuckets")
-	require.NoError(t, err)
-}
-
-func AssertS3BucketPublicAccessBlockConfigurationEnabledE(t *testing.T, region string, bucketName string, configType string) error {
 	config := GetPublicAccessBlockConfiguration(t, region, bucketName)
 
 	expected := true
