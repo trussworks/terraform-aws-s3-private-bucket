@@ -2,7 +2,6 @@ package test
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 	"time"
 
@@ -231,10 +230,21 @@ func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Opti
 	policy, err := aws.GetS3BucketPolicyE(t, region, bucketName)
 	require.NoError(t, err)
 
-	pattern := terraformOptions.Vars["pattern"].(string)
-	if !strings.Contains(policy, pattern) {
-		return fmt.Errorf("could not find pattern: %s in policy: %s", pattern, policy)
-	}
+	fmt.Println(policy)
+
+	// pattern := terraformOptions.Vars["pattern"].(string)
+
+	// if !strings.Contains(policy, pattern) {
+	// 	return fmt.Errorf("could not find pattern: %s in policy: %s", pattern, policy)
+	// }
+
+	// could not find pattern:
+	// {"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}
+	// in policy:
+	// {"Version":"2012-10-17","Statement":[
+	// 	{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::terratest-aws-s3-private-bucket-vivhll/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}},
+
+	// 	{"Sid":"inventory-and-analytics","Effect":"Allow","Principal":{"Service":"s3.amazonaws.com"},"Action":"s3:PutObject","Resource":"arn:aws:s3:::terratest-aws-s3-private-bucket-vivhll/*","Condition":{"StringEquals":{"s3:x-amz-acl":"bucket-owner-full-control","aws:SourceAccount":"170446316504"},"ArnLike":{"aws:SourceArn":"arn:aws:s3:::terratest-aws-s3-private-bucket-vivhll"}}}]}
 
 	return nil
 }

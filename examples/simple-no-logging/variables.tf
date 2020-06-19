@@ -6,3 +6,6 @@ variable "region" {
   type = string
 }
 
+variable "pattern" {
+  type = string
+}

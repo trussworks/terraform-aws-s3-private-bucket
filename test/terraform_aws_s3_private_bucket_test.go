@@ -31,11 +31,11 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
-	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
-	bytes := []byte(pattern)
 
 	var p Pattern
-	err := json.Unmarshal(bytes, &p)
+	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
+
+	err := json.Unmarshal([]byte(pattern), &p)
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"logging_bucket":   loggingBucket,
 			"region":           awsRegion,
 			"enable_analytics": true,
-			"pattern":          Pattern{},
+			"pattern":          pattern,
 		},
 
 		// Environment variables to set when running Terraform
@@ -91,11 +91,11 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
-	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
-	bytes := []byte(pattern)
 
 	var p Pattern
-	err := json.Unmarshal(bytes, &p)
+	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
+
+	err := json.Unmarshal([]byte(pattern), &p)
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +110,7 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 			"logging_bucket":   loggingBucket,
 			"region":           awsRegion,
 			"enable_analytics": false,
-			"pattern":          Pattern{},
+			"pattern":          pattern,
 		},
 
 		// Environment variables to set when running Terraform
@@ -118,6 +118,8 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
 	}
+
+	// pattern = strings.Replace(string(sortedJSONPattern), `"`, `\"`, -1)
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
@@ -202,6 +204,13 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-no-logging-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
+	var p Pattern
+	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
+
+	err := json.Unmarshal([]byte(pattern), &p)
+	if err != nil {
+		panic(err)
+	}
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: tempTestFolder,
@@ -210,6 +219,7 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 		Vars: map[string]interface{}{
 			"test_name": testName,
 			"region":    awsRegion,
+			"pattern":   pattern,
 		},
 
 		// Environment variables to set when running Terraform
