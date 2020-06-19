@@ -14,20 +14,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func GetPublicAccessBlockConfiguration(t *testing.T, region string, bucketName string) *s3.PublicAccessBlockConfiguration {
-	config, err := GetPublicAccessBlockConfigurationE(t, region, bucketName)
+func GetPublicAccessBlockConfiguration(t *testing.T, terraformOptions *terraform.Options) *s3.PublicAccessBlockConfiguration {
+	config, err := GetPublicAccessBlockConfigurationE(t, terraformOptions)
 	require.NoError(t, err)
 	return config
 
 }
 
-func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName string) (*s3.PublicAccessBlockConfiguration, error) {
+func GetPublicAccessBlockConfigurationE(t *testing.T, terraformOptions *terraform.Options) (*s3.PublicAccessBlockConfiguration, error) {
+	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
 		return nil, err
 	}
 
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	params := &s3.GetPublicAccessBlockInput{
 		Bucket: awssdk.String(bucketName),
 	}
@@ -53,18 +55,20 @@ func GetPublicAccessBlockConfigurationE(t *testing.T, region string, bucketName 
 	return publicAccessBlockConfiguration, nil
 }
 
-func AssertS3BucketEncryptionEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketEncryptionEnabledE(t, region, bucketName)
+func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketEncryptionEnabledE(t, terraformOptions)
 	require.NoError(t, err)
 }
 
-func AssertS3BucketEncryptionEnabledE(t *testing.T, region string, bucketName string) error {
+func AssertS3BucketEncryptionEnabledE(t *testing.T, terraformOptions *terraform.Options) error {
+	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
 		return err
 	}
 
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	params := &s3.GetBucketEncryptionInput{
 		Bucket: awssdk.String(bucketName),
 	}
@@ -115,9 +119,7 @@ func AssertS3BucketRestrictPublicBucketsEnabled(t *testing.T, terraformOptions *
 }
 
 func AssertS3BucketPublicAccessBlockConfigurationEnabledE(t *testing.T, terraformOptions *terraform.Options, configType string) error {
-	region := terraformOptions.Vars["region"].(string)
-	bucketName := terraformOptions.Vars["test_name"].(string)
-	config := GetPublicAccessBlockConfiguration(t, region, bucketName)
+	config := GetPublicAccessBlockConfiguration(t, terraformOptions)
 
 	expected := true
 	switch configType {
@@ -144,18 +146,20 @@ func AssertS3BucketPublicAccessBlockConfigurationEnabledE(t *testing.T, terrafor
 	return nil
 }
 
-func AssertS3BucketLoggingEnabled(t *testing.T, region string, bucketName string, loggingBucketName string) {
-	err := AssertS3BucketLoggingEnabledE(t, region, bucketName, loggingBucketName)
+func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketLoggingEnabledE(t, terraformOptions)
 	require.NoError(t, err)
 }
 
-func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName string, loggingBucketName string) error {
+func AssertS3BucketLoggingEnabledE(t *testing.T, terraformOptions *terraform.Options) error {
+	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
 		return err
 	}
 
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	params := &s3.GetBucketLoggingInput{
 		Bucket: awssdk.String(bucketName),
 	}
@@ -173,6 +177,7 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 	}
 
 	actual := *loggingEnabled.TargetBucket
+	loggingBucketName := terraformOptions.Vars["logging_bucket"].(string)
 	expected := loggingBucketName
 	if actual != expected {
 		return fmt.Errorf("Logging target bucket does not match expected. Got: %v, Expected: %v", actual, expected)
@@ -181,18 +186,20 @@ func AssertS3BucketLoggingEnabledE(t *testing.T, region string, bucketName strin
 	return nil
 }
 
-func AssertS3BucketLoggingNotEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketLoggingNotEnabledE(t, region, bucketName)
+func AssertS3BucketLoggingNotEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketLoggingNotEnabledE(t, terraformOptions)
 	require.NoError(t, err)
 }
 
-func AssertS3BucketLoggingNotEnabledE(t *testing.T, region string, bucketName string) error {
+func AssertS3BucketLoggingNotEnabledE(t *testing.T, terraformOptions *terraform.Options) error {
+	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
 		return err
 	}
 
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	params := &s3.GetBucketLoggingInput{
 		Bucket: awssdk.String(bucketName),
 	}
@@ -230,18 +237,20 @@ func AssertS3BucketPolicyContains(t *testing.T, region string, bucketName string
 	return nil
 }
 
-func AssertS3BucketAnalyticsEnabled(t *testing.T, region string, bucketName string) {
-	err := AssertS3BucketAnalyticsEnabledE(t, region, bucketName)
+func AssertS3BucketAnalyticsEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketAnalyticsEnabledE(t, terraformOptions)
 	require.NoError(t, err)
 }
 
-func AssertS3BucketAnalyticsEnabledE(t *testing.T, region string, bucketName string) error {
+func AssertS3BucketAnalyticsEnabledE(t *testing.T, terraformOptions *terraform.Options) error {
+	region := terraformOptions.Vars["region"].(string)
 	s3client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
 		return err
 	}
 
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	params := &s3.ListBucketAnalyticsConfigurationsInput{
 		Bucket: awssdk.String(bucketName),
 	}

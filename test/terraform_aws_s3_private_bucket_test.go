@@ -46,15 +46,15 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
 
-	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
+	AssertS3BucketEncryptionEnabled(t, terraformOptions)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
 	AssertS3BucketBlockPublicACLEnabled(t, terraformOptions)
 	AssertS3BucketBlockPublicPolicyEnabled(t, terraformOptions)
 	AssertS3BucketIgnorePublicACLEnabled(t, terraformOptions)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, terraformOptions)
-	AssertS3BucketLoggingEnabled(t, awsRegion, testName, loggingBucket)
+	AssertS3BucketLoggingEnabled(t, terraformOptions)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
-	AssertS3BucketAnalyticsEnabled(t, awsRegion, testName)
+	AssertS3BucketAnalyticsEnabled(t, terraformOptions)
 }
 
 func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
@@ -92,13 +92,13 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
 
-	AssertS3BucketEncryptionEnabled(t, awsRegion, testName)
+	AssertS3BucketEncryptionEnabled(t, terraformOptions)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
 	AssertS3BucketBlockPublicACLEnabled(t, terraformOptions)
 	AssertS3BucketBlockPublicPolicyEnabled(t, terraformOptions)
 	AssertS3BucketIgnorePublicACLEnabled(t, terraformOptions)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, terraformOptions)
-	AssertS3BucketLoggingEnabled(t, awsRegion, testName, loggingBucket)
+	AssertS3BucketLoggingEnabled(t, terraformOptions)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
 func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
@@ -197,6 +197,6 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
 
-	AssertS3BucketLoggingNotEnabled(t, awsRegion, testName)
+	AssertS3BucketLoggingNotEnabled(t, terraformOptions)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
 }
