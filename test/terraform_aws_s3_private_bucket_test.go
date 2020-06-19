@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"testing"
@@ -10,6 +11,15 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
+
+type Pattern struct {
+	Sid       string   `json:"Sid"`
+	Effect    string   `json:"Effect"`
+	Principal struct{} `json:"Principal"`
+	Action    string   `json:"Action"`
+	Resource  string   `json:"Resource"`
+	Condition struct{} `json:"Condition"`
+}
 
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
@@ -21,6 +31,14 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
+	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
+	bytes := []byte(pattern)
+
+	var p Pattern
+	err := json.Unmarshal(bytes, &p)
+	if err != nil {
+		panic(err)
+	}
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -32,6 +50,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"logging_bucket":   loggingBucket,
 			"region":           awsRegion,
 			"enable_analytics": true,
+			"pattern":          Pattern{},
 		},
 
 		// Environment variables to set when running Terraform
@@ -39,6 +58,11 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
 	}
+
+	// check if interface is not nil
+	// if n, ok := p.(*Pattern); ok {
+	// 	fmt.Printf("n=%#v\n", n)
+	// }
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
@@ -53,7 +77,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	AssertS3BucketIgnorePublicACLEnabled(t, terraformOptions)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, terraformOptions)
 	AssertS3BucketLoggingEnabled(t, terraformOptions)
-	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 	AssertS3BucketAnalyticsEnabled(t, terraformOptions)
 }
 
@@ -67,6 +91,14 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
+	pattern := `{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`
+	bytes := []byte(pattern)
+
+	var p Pattern
+	err := json.Unmarshal(bytes, &p)
+	if err != nil {
+		panic(err)
+	}
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -78,6 +110,7 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 			"logging_bucket":   loggingBucket,
 			"region":           awsRegion,
 			"enable_analytics": false,
+			"pattern":          Pattern{},
 		},
 
 		// Environment variables to set when running Terraform
@@ -99,7 +132,7 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 	AssertS3BucketIgnorePublicACLEnabled(t, terraformOptions)
 	AssertS3BucketRestrictPublicBucketsEnabled(t, terraformOptions)
 	AssertS3BucketLoggingEnabled(t, terraformOptions)
-	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 }
 func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	t.Parallel()
@@ -126,7 +159,7 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	aws.AssertS3BucketPolicyExists(t, awsRegion, testName)
-	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 }
 
 func TestTerraformAwsInventory(t *testing.T) {
@@ -155,7 +188,7 @@ func TestTerraformAwsInventory(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	aws.AssertS3BucketExists(t, awsRegion, testName)
-	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 
 }
 
@@ -198,5 +231,5 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	AssertS3BucketLoggingNotEnabled(t, terraformOptions)
-	AssertS3BucketPolicyContainsNonTLSDeny(t, awsRegion, testName)
+	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 }

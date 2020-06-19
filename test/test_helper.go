@@ -219,17 +219,19 @@ func AssertS3BucketLoggingNotEnabledE(t *testing.T, terraformOptions *terraform.
 	return nil
 }
 
-func AssertS3BucketPolicyContainsNonTLSDeny(t *testing.T, region string, bucketName string) {
-	pattern := fmt.Sprintf(`{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`, bucketName)
-	err := AssertS3BucketPolicyContains(t, region, bucketName, pattern)
+func AssertS3BucketPolicyContainsNonTLSDeny(t *testing.T, terraformOptions *terraform.Options) {
+	err := AssertS3BucketPolicyContains(t, terraformOptions)
 	require.NoError(t, err)
 
 }
 
-func AssertS3BucketPolicyContains(t *testing.T, region string, bucketName string, pattern string) error {
+func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Options) error {
+	region := terraformOptions.Vars["region"].(string)
+	bucketName := terraformOptions.Vars["test_name"].(string)
 	policy, err := aws.GetS3BucketPolicyE(t, region, bucketName)
 	require.NoError(t, err)
 
+	pattern := terraformOptions.Vars["pattern"].(string)
 	if !strings.Contains(policy, pattern) {
 		return fmt.Errorf("could not find pattern: %s in policy: %s", pattern, policy)
 	}
