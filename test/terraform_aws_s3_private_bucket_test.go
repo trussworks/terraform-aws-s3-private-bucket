@@ -59,11 +59,6 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 		},
 	}
 
-	// check if interface is not nil
-	// if n, ok := p.(*Pattern); ok {
-	// 	fmt.Printf("n=%#v\n", n)
-	// }
-
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -118,8 +113,6 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
 	}
-
-	// pattern = strings.Replace(string(sortedJSONPattern), `"`, `\"`, -1)
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)
