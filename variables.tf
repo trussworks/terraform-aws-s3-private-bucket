@@ -33,6 +33,12 @@ variable "enable_bucket_inventory" {
   description = "If set to true, Bucket Inventory will be enabled."
 }
 
+variable "enable_bucket_force_destroy" {
+  type        = bool
+  default     = false
+  description = "If set to true, Bucket will be emptied and destroyed when terraform destroy is run."
+}
+
 variable "inventory_bucket_format" {
   type        = string
   default     = "ORC"
