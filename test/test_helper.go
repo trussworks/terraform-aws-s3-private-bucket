@@ -57,16 +57,12 @@ func GetPublicAccessBlockConfigurationE(t *testing.T, terraformOptions *terrafor
 }
 
 func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	err := AssertS3BucketEncryptionEnabledE(t, terraformOptions)
-	require.NoError(t, err)
-}
-
-func AssertS3BucketEncryptionEnabledE(t *testing.T, terraformOptions *terraform.Options) error {
 	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
-		return err
+		fmt.Println(err)
+		return
 	}
 
 	bucketName := terraformOptions.Vars["test_name"].(string)
@@ -76,7 +72,7 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, terraformOptions *terraform.
 
 	maxRetries := 3
 	retryDuration := time.Duration(30)
-	_, err = retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration,
+	_, retryErr := retry.DoWithRetryE(t, "Get bucket encryption", maxRetries, retryDuration,
 		func() (string, error) {
 			encryption, err := s3Client.GetBucketEncryption(params)
 
@@ -95,8 +91,9 @@ func AssertS3BucketEncryptionEnabledE(t *testing.T, terraformOptions *terraform.
 			return "Retrieved bucket encryption", nil
 		},
 	)
-
-	return err
+	if retryErr != nil {
+		return
+	}
 }
 
 func AssertS3BucketBlockPublicACLEnabled(t *testing.T, terraformOptions *terraform.Options) {
