@@ -5,7 +5,3 @@ variable "test_name" {
 variable "region" {
   type = string
 }
-
-variable "pattern" {
-  type = string
-}

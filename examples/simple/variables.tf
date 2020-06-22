@@ -13,7 +13,3 @@ variable "region" {
 variable "enable_analytics" {
   type = bool
 }
-
-variable "pattern" {
-  type = string
-}

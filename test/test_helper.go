@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -220,12 +221,14 @@ func AssertS3BucketLoggingNotEnabledE(t *testing.T, terraformOptions *terraform.
 }
 
 func AssertS3BucketPolicyContainsNonTLSDeny(t *testing.T, terraformOptions *terraform.Options) {
-	err := AssertS3BucketPolicyContains(t, terraformOptions)
+	bucketName := terraformOptions.Vars["test_name"].(string)
+	pattern := fmt.Sprintf(`{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}`, bucketName)
+	err := AssertS3BucketPolicyContains(t, terraformOptions, pattern)
 	require.NoError(t, err)
 
 }
 
-func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Options) error {
+func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Options, pattern string) error {
 	region := terraformOptions.Vars["region"].(string)
 	bucketName := terraformOptions.Vars["test_name"].(string)
 	policy, err := aws.GetS3BucketPolicyE(t, region, bucketName)
@@ -233,19 +236,9 @@ func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Opti
 
 	fmt.Println(policy)
 
-	// pattern := terraformOptions.Vars["pattern"].(string)
-
-	// if !strings.Contains(policy, pattern) {
-	// 	return fmt.Errorf("could not find pattern: %s in policy: %s", pattern, policy)
-	// }
-
-	// could not find pattern:
-	// {"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::%s/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}}
-	// in policy:
-	// {"Version":"2012-10-17","Statement":[
-	// 	{"Sid":"enforce-tls-requests-only","Effect":"Deny","Principal":{"AWS":"*"},"Action":"s3:*","Resource":"arn:aws:s3:::terratest-aws-s3-private-bucket-vivhll/*","Condition":{"Bool":{"aws:SecureTransport":"false"}}},
-
-	// 	{"Sid":"inventory-and-analytics","Effect":"Allow","Principal":{"Service":"s3.amazonaws.com"},"Action":"s3:PutObject","Resource":"arn:aws:s3:::terratest-aws-s3-private-bucket-vivhll/*","Condition":{"StringEquals":{"s3:x-amz-acl":"bucket-owner-full-control","aws:SourceAccount":"170446316504"},"ArnLike":{"aws:SourceArn":"arn:aws:s3:::terratest-aws-s3-private-bucket-vivhll"}}}]}
+	if !strings.Contains(policy, pattern) {
+		return fmt.Errorf("could not find pattern: %s in policy: %s", pattern, policy)
+	}
 
 	return nil
 }
