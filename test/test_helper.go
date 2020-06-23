@@ -19,7 +19,6 @@ import (
 func GetPublicAccessBlockConfiguration(t *testing.T, terraformOptions *terraform.Options) *s3.PublicAccessBlockConfiguration {
 	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
-
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
 		return nil
@@ -59,7 +58,6 @@ func GetPublicAccessBlockConfiguration(t *testing.T, terraformOptions *terraform
 func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.Options) {
 	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
-
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
 		return
@@ -88,7 +86,6 @@ func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.O
 					return "", fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
 				}
 			}
-
 			return "Retrieved bucket encryption", nil
 		},
 	)
@@ -139,7 +136,6 @@ func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Opti
 	}
 
 	loggingEnabled := bucketLogging.LoggingEnabled
-
 	if loggingEnabled == nil {
 		assert.FailNow(t, "Logging not enabled")
 		return
@@ -156,7 +152,6 @@ func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Opti
 func AssertS3BucketLoggingNotEnabled(t *testing.T, terraformOptions *terraform.Options) {
 	region := terraformOptions.Vars["region"].(string)
 	s3Client, err := aws.NewS3ClientE(t, region)
-
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
 		return
@@ -168,14 +163,12 @@ func AssertS3BucketLoggingNotEnabled(t *testing.T, terraformOptions *terraform.O
 	}
 
 	bucketLogging, err := s3Client.GetBucketLogging(params)
-
 	if err != nil {
 		assert.FailNow(t, "Error getting bucket logging")
 		return
 	}
 
 	loggingEnabled := bucketLogging.LoggingEnabled
-
 	if loggingEnabled != nil {
 		assert.FailNow(t, "Logging is enabled")
 		return
@@ -193,8 +186,6 @@ func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Opti
 	bucketName := terraformOptions.Vars["test_name"].(string)
 	policy, err := aws.GetS3BucketPolicyE(t, region, bucketName)
 	require.NoError(t, err)
-
-	fmt.Println(policy)
 
 	if !strings.Contains(policy, pattern) {
 		assert.FailNowf(t, "could not find pattern: %s in policy: %s", pattern, policy)
@@ -217,14 +208,12 @@ func AssertS3BucketAnalyticsEnabled(t *testing.T, terraformOptions *terraform.Op
 	}
 
 	bucketAnalytics, err := s3client.ListBucketAnalyticsConfigurations(params)
-
 	if err != nil {
 		assert.FailNow(t, "Error listing bucket analytics configurations")
 		return
 	}
 
 	analytics := bucketAnalytics.AnalyticsConfigurationList
-
 	if len(analytics) < 1 {
 		assert.FailNow(t, "Analytics is not enabled")
 		return
