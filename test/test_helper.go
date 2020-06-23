@@ -98,49 +98,23 @@ func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.O
 	}
 }
 
-func AssertS3BucketBlockPublicACLEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions, "BlockPublicAcls")
-}
-
-func AssertS3BucketBlockPublicPolicyEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions, "BlockPublicPolicy")
-}
-
-func AssertS3BucketIgnorePublicACLEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions, "IgnorePublicAcls")
-}
-
-func AssertS3BucketRestrictPublicBucketsEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions, "RestrictPublicBuckets")
-}
-
-func AssertS3BucketPublicAccessBlockConfigurationEnabled(t *testing.T, terraformOptions *terraform.Options, configType string) {
+func AssertS3BucketPublicAccessBlockConfigurationEnabled(t *testing.T, terraformOptions *terraform.Options) {
 	config := GetPublicAccessBlockConfiguration(t, terraformOptions)
 
-	expected := true
-	switch configType {
-	case "BlockPublicAcls":
-		if *config.BlockPublicAcls != expected {
-			assert.FailNowf(t, "Block public ACLs not enabled", "%s\n")
-			return
-		}
-	case "BlockPublicPolicy":
-		if *config.BlockPublicPolicy != expected {
-			assert.FailNowf(t, "Block public policy not enabled", "%s\n")
-			return
-		}
-	case "IgnorePublicAcls":
-		if *config.IgnorePublicAcls != expected {
-			assert.FailNowf(t, "Ignore public ACLs not enabled", "%s\n")
-			return
-		}
-	case "RestrictPublicBuckets":
-		if *config.RestrictPublicBuckets != expected {
-			assert.FailNowf(t, "Restrict public buckets not enabled", "%s\n")
-			return
-		}
-	default:
-		assert.FailNowf(t, "Unrecognized public access block configuration type", "%s\n")
+	if !*config.BlockPublicAcls {
+		assert.FailNowf(t, "Block public ACLs not enabled", "%s\n")
+		return
+	}
+	if !*config.BlockPublicPolicy {
+		assert.FailNowf(t, "Block public policy not enabled", "%s\n")
+		return
+	}
+	if !*config.IgnorePublicAcls {
+		assert.FailNowf(t, "Ignore public ACLs not enabled", "%s\n")
+		return
+	}
+	if !*config.RestrictPublicBuckets {
+		assert.FailNowf(t, "Restrict public buckets not enabled", "%s\n")
 		return
 	}
 }

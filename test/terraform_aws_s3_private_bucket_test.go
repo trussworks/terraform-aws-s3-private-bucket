@@ -48,13 +48,10 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 	AssertS3BucketEncryptionEnabled(t, terraformOptions)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
-	AssertS3BucketBlockPublicACLEnabled(t, terraformOptions)
-	AssertS3BucketBlockPublicPolicyEnabled(t, terraformOptions)
-	AssertS3BucketIgnorePublicACLEnabled(t, terraformOptions)
-	AssertS3BucketRestrictPublicBucketsEnabled(t, terraformOptions)
 	AssertS3BucketLoggingEnabled(t, terraformOptions)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 	AssertS3BucketAnalyticsEnabled(t, terraformOptions)
+	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions)
 }
 
 func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
@@ -94,12 +91,9 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 
 	AssertS3BucketEncryptionEnabled(t, terraformOptions)
 	aws.AssertS3BucketVersioningExists(t, awsRegion, testName)
-	AssertS3BucketBlockPublicACLEnabled(t, terraformOptions)
-	AssertS3BucketBlockPublicPolicyEnabled(t, terraformOptions)
-	AssertS3BucketIgnorePublicACLEnabled(t, terraformOptions)
-	AssertS3BucketRestrictPublicBucketsEnabled(t, terraformOptions)
 	AssertS3BucketLoggingEnabled(t, terraformOptions)
 	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
+	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions)
 }
 func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 	t.Parallel()
