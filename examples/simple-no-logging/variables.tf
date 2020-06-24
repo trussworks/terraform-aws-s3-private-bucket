@@ -5,4 +5,3 @@ variable "test_name" {
 variable "region" {
   type = string
 }
-
