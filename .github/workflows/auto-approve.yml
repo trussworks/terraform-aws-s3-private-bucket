@@ -61,7 +61,7 @@ jobs:
     steps:
       - name: "Wait for status checks"
         id: waitforstatuschecks
-        uses: "WyriHaximus/github-action-wait-for-status@v1.0.0"
+        uses: "WyriHaximus/github-action-wait-for-status@v1"
         with:
           ignoreActions: merge
           checkInterval: 13
