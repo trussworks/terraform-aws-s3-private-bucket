@@ -6,10 +6,6 @@ on:
       - "go.mod"
       - "go.sum"
 
-# job level conditions don't seem to work at the moment
-# https://github.community/t5/GitHub-Actions/Status-of-workflows-with-no-running-jobs/td-p/37160
-# which is why github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]' is
-# repeated over and over
 jobs:
   tidy:
     name: run go mod tidy and updated
@@ -61,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: sleep 13
-      - name: 'Wait for status checks'
+      - name: "Wait for status checks"
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1
         with:
