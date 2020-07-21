@@ -55,7 +55,7 @@ jobs:
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1
         with:
-          ignoreActions: "auto-approve dependabot PRs, auto-merge dependabot PRs"
+          ignoreActions: "auto-approve dependabot PRs, auto-merge dependabot PRs, approve, merge"
           checkInterval: 5
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: approve
         uses: hmarr/auto-approve-action@v2.0.0
-        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
+        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
   merge:
@@ -79,7 +79,7 @@ jobs:
     steps:
       - name: merge
         uses: actions/github-script@0.2.0
-        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
+        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
         with:
           script: |
             github.pullRequests.merge({
