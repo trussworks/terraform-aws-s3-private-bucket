@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: sleep 13
-      - name: "Wait for status checks"
+      - name: wait for status checks
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1
         with:
@@ -67,7 +67,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - id: generate-version-strategy
         if: steps.waitforstatuschecks.outputs.status != 'success'
-        name: Fail
+        name: fail
         run: exit 1
       - name: merge
         uses: actions/github-script@0.2.0
