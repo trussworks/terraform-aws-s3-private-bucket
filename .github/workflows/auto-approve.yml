@@ -5,11 +5,6 @@ on:
       - ".github/workflows/gosum.yml"
       - "go.mod"
       - "go.sum"
-
-# job level conditions don't seem to work at the moment
-# https://github.community/t5/GitHub-Actions/Status-of-workflows-with-no-running-jobs/td-p/37160
-# which is why github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]' is
-# repeated over and over
 jobs:
   tidy:
     name: run go mod tidy and updated
@@ -44,26 +39,26 @@ jobs:
             git commit -m 'Fix go modules'
             git push
           fi
-  check:
-    name: check
-    runs-on: ubuntu-latest
-    needs: [tidy]
-    steps:
-      - name: "Wait for status checks"
-        id: waitforstatuschecks
-        uses: WyriHaximus/github-action-wait-for-status@v1
-        with:
-          ignoreActions: "auto-approve dependabot PRs, auto-merge dependabot PRs, approve, merge"
-          checkInterval: 5
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - name: fail
-        if: steps.waitforstatuschecks.outputs.status != 'success'
-        run: exit 1
+  # check:
+  #   name: check
+  #   runs-on: ubuntu-latest
+  #   needs: [tidy]
+  #   steps:
+  #     - name: "Wait for status checks"
+  #       id: waitforstatuschecks
+  #       uses: WyriHaximus/github-action-wait-for-status@v1
+  #       with:
+  #         ignoreActions: "auto-approve dependabot PRs, auto-merge dependabot PRs, approve, merge"
+  #         checkInterval: 5
+  #       env:
+  #         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  #     - name: fail
+  #       if: steps.waitforstatuschecks.outputs.status != 'success'
+  #       run: exit 1
   approve:
     name: auto-approve dependabot PRs
     runs-on: ubuntu-latest
-    needs: [check]
+    needs: [tidy]
     steps:
       - name: approve
         uses: hmarr/auto-approve-action@v2.0.0
@@ -75,6 +70,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: [approve]
     steps:
+      - name: "Wait for status checks"
+        id: waitforstatuschecks
+        uses: WyriHaximus/github-action-wait-for-status@v1
+        with:
+          ignoreActions: "auto-merge dependabot PRs, merge"
+          checkInterval: 5
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: fail
+        if: steps.waitforstatuschecks.outputs.status != 'success'
+        run: exit 1
       - name: merge
         uses: actions/github-script@0.2.0
         if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]')
