@@ -73,7 +73,7 @@ jobs:
       - name: "Wait for status checks"
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1
-        wih:
+        with:
           ignoreActions: "auto-approve dependabot PRs, auto-merge dependabot PRs, approve, merge"
           checkInterval: 5
         env:
