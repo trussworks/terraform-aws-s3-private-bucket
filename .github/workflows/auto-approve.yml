@@ -68,6 +68,7 @@ jobs:
   merge:
     name: auto-merge dependabot PRs
     runs-on: ubuntu-latest
+    needs: [approve]
     steps:
       - name: "Wait for status checks"
         id: waitforstatuschecks
