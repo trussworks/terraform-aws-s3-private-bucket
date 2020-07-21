@@ -49,8 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [tidy]
     steps:
-      - uses: actions/checkout@v1
-      - run: sleep 13
       - name: "Wait for status checks"
         id: waitforstatuschecks
         uses: WyriHaximus/github-action-wait-for-status@v1
