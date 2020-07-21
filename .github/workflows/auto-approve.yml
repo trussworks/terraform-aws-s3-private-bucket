@@ -44,8 +44,8 @@ jobs:
             git commit -m 'Fix go modules'
             git push
           fi
-  approve:
-    name: auto-approve dependabot PRs
+  check:
+    name: check
     runs-on: ubuntu-latest
     needs: [tidy]
     steps:
@@ -56,15 +56,20 @@ jobs:
         uses: WyriHaximus/github-action-wait-for-status@v1
         with:
           ignoreActions: "auto-approve dependabot PRs, auto-merge dependabot PRs"
-          checkInterval: 13
+          checkInterval: 5
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: fail
         if: steps.waitforstatuschecks.outputs.status != 'success'
         run: exit 1
+  approve:
+    name: auto-approve dependabot PRs
+    runs-on: ubuntu-latest
+    needs: [check]
+    steps:
       - name: approve
         uses: hmarr/auto-approve-action@v2.0.0
-        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status != 'success'
+        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
   merge:
@@ -74,7 +79,7 @@ jobs:
     steps:
       - name: merge
         uses: actions/github-script@0.2.0
-        if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
         with:
           script: |
             github.pullRequests.merge({
