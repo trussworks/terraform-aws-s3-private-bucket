@@ -1,12 +1,24 @@
-name: auto merge
+name: auto approve and merge
 on:
   pull_request:
-    types: approved
+    types: ready_for_review
 
 jobs:
+  approve:
+    name: auto-approve dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    steps:
+      - name: approve
+        uses: hmarr/auto-approve-action@v2.0.0
+        if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
   merge:
     name: auto-merge dependabot PRs
     runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    needs: approve
     steps:
       - uses: actions/checkout@v1
       - run: sleep 13
@@ -24,7 +36,7 @@ jobs:
         run: exit 1
       - name: merge
         uses: actions/github-script@0.2.0
-        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
+        if: steps.waitforstatuschecks.outputs.status == 'success'
         with:
           script: |
             github.pullRequests.merge({
