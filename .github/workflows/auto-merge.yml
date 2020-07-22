@@ -1,4 +1,4 @@
-name: tidy
+name: tidy, auto approve, and auto merge
 on:
   pull_request:
     paths:
