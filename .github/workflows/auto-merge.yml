@@ -1,7 +1,5 @@
 name: auto approve and merge
-on:
-  pull_request:
-    types: ready_for_review
+on: pull_request
 
 jobs:
   approve:
