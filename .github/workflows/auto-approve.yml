@@ -1,11 +1,10 @@
-name: auto approve and merge and tidy
+name: tidy and auto approve
 on:
   pull_request:
     paths:
       - ".github/workflows/gosum.yml"
       - "go.mod"
       - "go.sum"
-
 jobs:
   tidy:
     name: run go mod tidy and updated
@@ -42,41 +41,11 @@ jobs:
           fi
   approve:
     name: auto-approve dependabot PRs
+    needs: tidy
     runs-on: ubuntu-latest
-    needs: [tidy]
     steps:
       - name: approve
         uses: hmarr/auto-approve-action@v2.0.0
         if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-  merge:
-    name: auto-merge dependabot PRs
-    runs-on: ubuntu-latest
-    needs: [approve]
-    steps:
-      - uses: actions/checkout@v1
-      - run: sleep 13
-      - name: wait for status checks
-        id: waitforstatuschecks
-        uses: WyriHaximus/github-action-wait-for-status@v1
-        with:
-          ignoreActions: "auto-merge dependabot PRs, wait for status checks"
-          checkInterval: 5
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - id: generate-version-strategy
-        if: steps.waitforstatuschecks.outputs.status != 'success'
-        name: fail
-        run: exit 1
-      - name: merge
-        uses: actions/github-script@0.2.0
-        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
-        with:
-          script: |
-            github.pullRequests.merge({
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number
-            })
           github-token: "${{ secrets.GITHUB_TOKEN }}"

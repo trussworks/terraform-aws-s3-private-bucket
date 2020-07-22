@@ -1,0 +1,35 @@
+name: auto merge
+on:
+  pull_request:
+    types: approved
+
+jobs:
+  merge:
+    name: auto-merge dependabot PRs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: sleep 13
+      - name: "Wait for status checks"
+        id: waitforstatuschecks
+        uses: WyriHaximus/github-action-wait-for-status@v1
+        with:
+          ignoreActions: "auto-merge dependabot PRs"
+          checkInterval: 13
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - id: generate-version-strategy
+        if: steps.waitforstatuschecks.outputs.status != 'success'
+        name: Fail
+        run: exit 1
+      - name: merge
+        uses: actions/github-script@0.2.0
+        if: (github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]') && steps.waitforstatuschecks.outputs.status == 'success'
+        with:
+          script: |
+            github.pullRequests.merge({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number
+            })
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
