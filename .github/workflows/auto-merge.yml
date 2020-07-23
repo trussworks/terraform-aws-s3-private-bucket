@@ -7,7 +7,6 @@ jobs:
   merge:
     name: auto-merge dependabot PRs
     runs-on: ubuntu-latest
-    needs: approve
     if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]' && github.event.pull_request_review.state == 'APPROVED'
     steps:
       - name: merge
