@@ -2,6 +2,8 @@ name: auto merge
 on:
   pull_request_review:
     types: [submitted]
+
+jobs:
   merge:
     name: auto-merge dependabot PRs
     runs-on: ubuntu-latest
