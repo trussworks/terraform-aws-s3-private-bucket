@@ -1,13 +1,13 @@
 name: auto merge
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
 
 jobs:
   merge:
     name: auto-merge dependabot PRs
     runs-on: ubuntu-latest
-    if: github.actor == 'github-actions[bot]' && github.event.pull_request_review.state == 'APPROVED'
+    if: github.actor == 'github-actions[bot]' && github.event.pull_request_review_comment.body == 'AUTO APPROVED'
     steps:
       - name: merge
         uses: actions/github-script@0.2.0

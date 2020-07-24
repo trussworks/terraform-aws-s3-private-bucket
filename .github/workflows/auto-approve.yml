@@ -55,4 +55,11 @@ jobs:
               pull_number: context.payload.pull_request.number,
               event: 'APPROVE'
             })
+            github.pullRequests.createReview({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number,
+              event: 'COMMENT'
+              body: 'AUTO APPROVED'
+            })
           github-token: "${{ secrets.GITHUB_TOKEN }}"
