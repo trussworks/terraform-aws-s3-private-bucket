@@ -1,8 +1,10 @@
-data "aws_iam_account_alias" "current" {}
+data "aws_iam_account_alias" "current" {
+  count = var.use_account_alias_prefix ? 1 : 0
+}
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 locals {
-  bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current.account_alias) : ""
+  bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current[0].account_alias) : ""
   bucket_id             = "${local.bucket_prefix}${var.bucket}"
   enable_bucket_logging = var.logging_bucket != ""
 }
