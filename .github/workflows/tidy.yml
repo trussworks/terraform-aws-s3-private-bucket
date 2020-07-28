@@ -1,4 +1,4 @@
-name: tidy and auto approve
+name: tidy
 on:
   pull_request:
     paths:
@@ -39,27 +39,3 @@ jobs:
             git commit -m 'Fix go modules'
             git push
           fi
-  approve:
-    name: auto-approve dependabot PRs
-    runs-on: ubuntu-latest
-    needs: tidy
-    steps:
-      - name: approve
-        uses: actions/github-script@0.2.0
-        if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
-        with:
-          script: |
-            github.pullRequests.createReview({
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number,
-              event: 'APPROVE'
-            })
-            github.pullRequests.createReview({
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number,
-              event: 'COMMENT',
-              body: 'AUTO APPROVED'
-            })
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
