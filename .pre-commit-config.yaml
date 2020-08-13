@@ -23,7 +23,7 @@ repos:
     rev: v1.30.0
     hooks:
       - id: golangci-lint
-        entry: golangci-lint run --verbose
+        entry: golangci-lint run
         verbose: true
 
   - repo: git://github.com/antonbabenko/pre-commit-terraform
