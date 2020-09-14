@@ -48,7 +48,7 @@ module "s3_private_bucket" {
 
 module "s3_logs" {
   source  = "trussworks/logs/aws"
-  version = "=> 8"
+  version = "8"
 
   s3_bucket_name = var.logging_bucket
   region         = var.region
