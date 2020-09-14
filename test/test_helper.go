@@ -18,7 +18,7 @@ import (
 )
 
 func GetPublicAccessBlockConfiguration(t *testing.T, terraformOptions *terraform.Options) *s3.PublicAccessBlockConfiguration {
-	region := terraformOptions.Vars["region"].(string)
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	s3Client, err := aws.NewS3ClientE(t, region)
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
@@ -57,7 +57,7 @@ func GetPublicAccessBlockConfiguration(t *testing.T, terraformOptions *terraform
 }
 
 func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	region := terraformOptions.Vars["region"].(string)
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	s3Client, err := aws.NewS3ClientE(t, region)
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
@@ -118,7 +118,7 @@ func AssertS3BucketPublicAccessBlockConfigurationEnabled(t *testing.T, terraform
 }
 
 func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	region := terraformOptions.Vars["region"].(string)
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	s3Client, err := aws.NewS3ClientE(t, region)
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
@@ -151,7 +151,7 @@ func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Opti
 }
 
 func AssertS3BucketLoggingNotEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	region := terraformOptions.Vars["region"].(string)
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	s3Client, err := aws.NewS3ClientE(t, region)
 	if err != nil {
 		assert.FailNow(t, "Error creating s3client")
@@ -183,7 +183,7 @@ func AssertS3BucketPolicyContainsNonTLSDeny(t *testing.T, terraformOptions *terr
 }
 
 func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Options, pattern string) {
-	region := terraformOptions.Vars["region"].(string)
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	bucketName := terraformOptions.Vars["test_name"].(string)
 	policy, err := aws.GetS3BucketPolicyE(t, region, bucketName)
 	require.NoError(t, err)
@@ -195,7 +195,7 @@ func AssertS3BucketPolicyContains(t *testing.T, terraformOptions *terraform.Opti
 }
 
 func AssertS3BucketAnalyticsEnabled(t *testing.T, terraformOptions *terraform.Options) {
-	region := terraformOptions.Vars["region"].(string)
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	s3client, err := aws.NewS3ClientE(t, region)
 
 	if err != nil {
