@@ -72,6 +72,7 @@ module "aws-s3-bucket" {
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
+| cors\_rules | CORS rules in the [`s3_bucket` module format](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#using-cors) | `list(any)` | `[]` | no |
 
 ## Outputs
 

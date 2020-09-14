@@ -56,3 +56,9 @@ variable enable_analytics {
   default     = true
   type        = bool
 }
+
+variable "cors_rule" {
+  description = "List of maps containing rules for Cross-Origin Resource Sharing."
+  type        = list(any)
+  default     = []
+}
