@@ -5,7 +5,3 @@ variable "test_name" {
 variable "logging_bucket" {
   type = string
 }
-
-variable "region" {
-  type = string
-}
