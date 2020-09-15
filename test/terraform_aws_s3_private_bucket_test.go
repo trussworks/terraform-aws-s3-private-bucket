@@ -30,7 +30,6 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 		Vars: map[string]interface{}{
 			"test_name":        testName,
 			"logging_bucket":   loggingBucket,
-			"region":           awsRegion,
 			"enable_analytics": true,
 		},
 
@@ -73,7 +72,6 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 		Vars: map[string]interface{}{
 			"test_name":        testName,
 			"logging_bucket":   loggingBucket,
-			"region":           awsRegion,
 			"enable_analytics": false,
 		},
 
@@ -108,7 +106,6 @@ func TestTerraformAwsS3PrivateBucketCustomPolicy(t *testing.T) {
 		Vars: map[string]interface{}{
 			"test_name":      testName,
 			"logging_bucket": loggingBucket,
-			"region":         awsRegion,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -136,7 +133,6 @@ func TestTerraformAwsInventory(t *testing.T) {
 		Vars: map[string]interface{}{
 			"test_name":               testName,
 			"logging_bucket":          loggingBucket,
-			"region":                  awsRegion,
 			"enable_bucket_inventory": true,
 		},
 		EnvVars: map[string]string{
@@ -170,7 +166,6 @@ func TestTerraformAwsS3PrivateBucketNoLoggingBucket(t *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"test_name": testName,
-			"region":    awsRegion,
 		},
 
 		// Environment variables to set when running Terraform
