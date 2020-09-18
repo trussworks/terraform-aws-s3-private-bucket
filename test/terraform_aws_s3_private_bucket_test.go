@@ -9,11 +9,11 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	map_structure "github.com/mitchellh/mapstructure"
 )
 
 type corsRule struct {
-	corsRuleA map[string]string
-	corsRuleB map[string]string
+	Corsified map[string]string
 }
 
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
@@ -26,13 +26,18 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
-	corsRules := corsRule{
-		corsRuleA: map[string]string{
+
+	corsRules := map[string]interface{}{
+		"corsified": map[string]string{
 			"AllowedOrigins": "http://www.isitthursday.org",
-		},
-		corsRuleB: map[string]string{
 			"AllowedMethods": "PUT",
 		},
+	}
+
+	var result corsRule
+	err := map_structure.Decode(corsRules, &result)
+	if err != nil {
+		panic(err)
 	}
 
 	terraformOptions := &terraform.Options{
