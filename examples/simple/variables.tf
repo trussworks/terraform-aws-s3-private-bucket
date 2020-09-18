@@ -9,3 +9,8 @@ variable "logging_bucket" {
 variable "enable_analytics" {
   type = bool
 }
+
+variable "cors_rule" {
+  type    = list(any)
+  default = []
+}

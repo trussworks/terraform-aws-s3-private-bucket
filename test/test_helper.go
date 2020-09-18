@@ -220,3 +220,30 @@ func AssertS3BucketAnalyticsEnabled(t *testing.T, terraformOptions *terraform.Op
 		return
 	}
 }
+
+func AssertS3BucketCorsEnabled(t *testing.T, terraformOptions *terraform.Options) {
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
+	s3Client, err := aws.NewS3ClientE(t, region)
+	if err != nil {
+		assert.FailNow(t, "Error creating s3client")
+		return
+	}
+
+	bucketName := terraformOptions.Vars["test_name"].(string)
+	params := &s3.GetBucketCorsInput{
+		Bucket: awssdk.String(bucketName),
+	}
+
+	bucketCors, err := s3Client.GetBucketCors(params)
+	if err != nil {
+		assert.FailNow(t, "Error getting bucket cors configurations")
+		return
+	}
+
+	cors := bucketCors.CORSRules
+	if cors != nil {
+		assert.FailNow(t, "cors subresources not enabled")
+		return
+	}
+
+}

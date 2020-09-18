@@ -11,6 +11,11 @@ import (
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
+type corsRule struct {
+	corsRuleA map[string]string
+	corsRuleB map[string]string
+}
+
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
 
@@ -21,6 +26,14 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-%s", strings.ToLower(random.UniqueId()))
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
+	corsRules := corsRule{
+		corsRuleA: map[string]string{
+			"AllowedOrigins": "http://www.isitthursday.org",
+		},
+		corsRuleB: map[string]string{
+			"AllowedMethods": "PUT",
+		},
+	}
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -31,6 +44,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"test_name":        testName,
 			"logging_bucket":   loggingBucket,
 			"enable_analytics": true,
+			"cors_rule":        corsRules,
 		},
 
 		// Environment variables to set when running Terraform
@@ -51,6 +65,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 	AssertS3BucketAnalyticsEnabled(t, terraformOptions)
 	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions)
+	AssertS3BucketCorsEnabled(t, terraformOptions)
 }
 
 func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {

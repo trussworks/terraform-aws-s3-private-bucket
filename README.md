@@ -65,6 +65,7 @@ module "aws-s3-bucket" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | bucket | The name of the bucket. | `string` | n/a | yes |
+| cors\_rule | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
 | enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
 | enable\_bucket\_force\_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
