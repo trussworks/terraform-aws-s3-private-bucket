@@ -10,7 +10,7 @@ variable "enable_analytics" {
   type = bool
 }
 
-variable "cors_rule" {
+variable "cors_rules" {
   type    = list(any)
   default = []
 }

@@ -9,12 +9,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
-	map_structure "github.com/mitchellh/mapstructure"
 )
-
-type corsRule struct {
-	Corsified map[string]string
-}
 
 func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	t.Parallel()
@@ -27,17 +22,10 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
 
-	corsRules := map[string]interface{}{
-		"corsified": map[string]string{
-			"AllowedOrigins": "http://www.isitthursday.org",
-			"AllowedMethods": "PUT",
-		},
-	}
-
-	var result corsRule
-	err := map_structure.Decode(corsRules, &result)
-	if err != nil {
-		panic(err)
+	type corsRule map[string][]string
+	rule := corsRule{
+		"allowed_methods": []string{"PUT"},
+		"allowed_origins": []string{"http://www.isitthursday.org"},
 	}
 
 	terraformOptions := &terraform.Options{
@@ -49,7 +37,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"test_name":        testName,
 			"logging_bucket":   loggingBucket,
 			"enable_analytics": true,
-			"cors_rule":        corsRules,
+			"cors_rules":       []corsRule{rule},
 		},
 
 		// Environment variables to set when running Terraform

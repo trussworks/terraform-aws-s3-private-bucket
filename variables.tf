@@ -27,25 +27,25 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "enable_bucket_inventory" {
+variable enable_bucket_inventory {
   type        = bool
   default     = false
   description = "If set to true, Bucket Inventory will be enabled."
 }
 
-variable "enable_bucket_force_destroy" {
+variable enable_bucket_force_destroy {
   type        = bool
   default     = false
   description = "If set to true, Bucket will be emptied and destroyed when terraform destroy is run."
 }
 
-variable "inventory_bucket_format" {
+variable inventory_bucket_format {
   type        = string
   default     = "ORC"
   description = "The format for the inventory file. Default is ORC. Options are ORC or CSV."
 }
 
-variable "schedule_frequency" {
+variable schedule_frequency {
   type        = string
   default     = "Weekly"
   description = "The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'."
@@ -57,7 +57,7 @@ variable enable_analytics {
   type        = bool
 }
 
-variable "cors_rule" {
+variable cors_rules {
   description = "List of maps containing rules for Cross-Origin Resource Sharing."
   type        = list(any)
   default     = []
