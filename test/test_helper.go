@@ -235,13 +235,14 @@ func AssertS3BucketCorsEnabled(t *testing.T, terraformOptions *terraform.Options
 	}
 
 	bucketCors, err := s3Client.GetBucketCors(params)
+
 	if err != nil {
 		assert.FailNow(t, "Error getting bucket cors configurations")
 		return
 	}
 
 	cors := bucketCors.CORSRules
-	if cors != nil {
+	if cors == nil {
 		assert.FailNow(t, "cors subresources not enabled")
 		return
 	}
