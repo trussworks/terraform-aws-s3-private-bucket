@@ -9,6 +9,7 @@ module "s3_private_bucket" {
   use_account_alias_prefix = false
   logging_bucket           = module.s3_logs.aws_logs_bucket
   enable_analytics         = var.enable_analytics
+  cors_rules               = var.cors_rules
 }
 
 #
