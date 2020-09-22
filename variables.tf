@@ -51,8 +51,13 @@ variable "schedule_frequency" {
   description = "The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'."
 }
 
-variable enable_analytics {
+variable "enable_analytics" {
   description = "Enables storage class analytics on the bucket."
   default     = true
   type        = bool
+}
+
+variable "cors_rules" {
+  type    = list(any)
+  default = []
 }

@@ -13,3 +13,8 @@ variable "region" {
 variable "enable_analytics" {
   type = bool
 }
+
+variable "cors_rules" {
+  type    = list(any)
+  default = []
+}

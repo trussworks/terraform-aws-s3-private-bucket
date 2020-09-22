@@ -22,6 +22,12 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	loggingBucket := fmt.Sprintf("%s-logs", testName)
 	awsRegion := "us-west-2"
 
+	type corsRule map[string][]string
+	rule := corsRule{
+		"allowed_methods": []string{"PUT"},
+		"allowed_origins": []string{"http://www.isitthursday.org"},
+	}
+
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: tempTestFolder,
@@ -32,6 +38,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"logging_bucket":   loggingBucket,
 			"region":           awsRegion,
 			"enable_analytics": true,
+			"cors_rules":       []corsRule{rule},
 		},
 
 		// Environment variables to set when running Terraform
@@ -52,6 +59,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 	AssertS3BucketPolicyContainsNonTLSDeny(t, terraformOptions)
 	AssertS3BucketAnalyticsEnabled(t, terraformOptions)
 	AssertS3BucketPublicAccessBlockConfigurationEnabled(t, terraformOptions)
+	AssertS3BucketCorsEnabled(t, terraformOptions)
 }
 
 func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
