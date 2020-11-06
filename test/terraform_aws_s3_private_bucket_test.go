@@ -79,9 +79,10 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"test_name":        testName,
-			"logging_bucket":   loggingBucket,
-			"enable_analytics": false,
+			"test_name":         testName,
+			"logging_bucket":    loggingBucket,
+			"enable_analytics":  false,
+			"enable_versioning": true,
 		},
 
 		// Environment variables to set when running Terraform
