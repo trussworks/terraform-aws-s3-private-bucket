@@ -70,6 +70,7 @@ module "aws-s3-bucket" {
 | enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
 | enable\_bucket\_force\_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
+| enable\_versioning | Enables versioning on the bucket. | `string` | `true` | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |

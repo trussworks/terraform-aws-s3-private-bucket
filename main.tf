@@ -72,7 +72,7 @@ resource "aws_s3_bucket" "private_bucket" {
   force_destroy = var.enable_bucket_force_destroy
 
   versioning {
-    enabled = true
+    enabled = var.enable_versioning
   }
 
   lifecycle_rule {
