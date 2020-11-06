@@ -65,6 +65,6 @@ variable "cors_rules" {
 
 variable "enable_versioning" {
   description = "Enables versioning on the bucket."
-  type        = string
+  type        = bool
   default     = true
 }
