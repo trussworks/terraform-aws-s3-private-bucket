@@ -14,3 +14,7 @@ variable "cors_rules" {
   type    = list(any)
   default = []
 }
+
+variable "enable_versioning" {
+  type = bool
+}
