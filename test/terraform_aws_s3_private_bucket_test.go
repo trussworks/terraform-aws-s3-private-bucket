@@ -34,11 +34,12 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"test_name":        testName,
-			"logging_bucket":   loggingBucket,
-			"region":           awsRegion,
-			"enable_analytics": true,
-			"cors_rules":       []corsRule{rule},
+			"test_name":         testName,
+			"logging_bucket":    loggingBucket,
+			"region":            awsRegion,
+			"enable_analytics":  true,
+			"cors_rules":        []corsRule{rule},
+			"enable_versioning": true,
 		},
 
 		// Environment variables to set when running Terraform
@@ -79,10 +80,11 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"test_name":        testName,
-			"logging_bucket":   loggingBucket,
-			"region":           awsRegion,
-			"enable_analytics": false,
+			"test_name":         testName,
+			"logging_bucket":    loggingBucket,
+			"region":            awsRegion,
+			"enable_analytics":  false,
+			"enable_versioning": true,
 		},
 
 		// Environment variables to set when running Terraform

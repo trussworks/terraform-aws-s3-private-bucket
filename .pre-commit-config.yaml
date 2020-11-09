@@ -8,7 +8,7 @@ repos:
         types: [go]
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v3.3.0
     hooks:
       - id: check-json
       - id: check-merge-conflict
@@ -27,7 +27,7 @@ repos:
         verbose: true
 
   - repo: git://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.31.0
+    rev: v1.44.0
     hooks:
       - id: terraform_docs
       - id: terraform_fmt

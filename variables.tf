@@ -61,3 +61,9 @@ variable "cors_rules" {
   type    = list(any)
   default = []
 }
+
+variable "enable_versioning" {
+  description = "Enables versioning on the bucket."
+  type        = bool
+  default     = true
+}
