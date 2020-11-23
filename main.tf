@@ -153,7 +153,7 @@ resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
       destination {
         s3_bucket_destination {
           bucket_arn = aws_s3_bucket.private_bucket.arn
-          prefix     = "/_AWSBucketAnalytics"
+          prefix     = "_AWSBucketAnalytics"
         }
       }
     }
