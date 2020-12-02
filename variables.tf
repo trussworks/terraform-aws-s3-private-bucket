@@ -68,3 +68,32 @@ variable "enable_versioning" {
   type        = bool
   default     = true
 }
+
+variable "abort_incomplete_multipart_upload_days" {
+  description = "Number of days until aborting incomplete multipart uploads"
+  type        = number
+  default     = 14
+}
+
+variable "transitions" {
+  description = "Current version transition blocks"
+  type        = list(any)
+  default     = []
+}
+
+variable "noncurrent_version_transitions" {
+  description = "Non-current version transition blocks"
+  type        = list(any)
+  default = [
+    {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+  ]
+}
+
+variable "noncurrent_version_expiration" {
+  description = "Number of days until non-current version of object expires"
+  type        = number
+  default     = 365
+}

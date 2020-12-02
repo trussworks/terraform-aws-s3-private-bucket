@@ -64,6 +64,7 @@ module "aws-s3-bucket" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| abort\_incomplete\_multipart\_upload\_days | Number of days until aborting incomplete multipart uploads | `number` | `14` | no |
 | bucket | The name of the bucket. | `string` | n/a | yes |
 | cors\_rules | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
@@ -73,8 +74,11 @@ module "aws-s3-bucket" {
 | enable\_versioning | Enables versioning on the bucket. | `bool` | `true` | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
+| noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
+| noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | <pre>[<br>  {<br>    "days": 30,<br>    "storage_class": "STANDARD_IA"<br>  }<br>]</pre> | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
+| transitions | Current version transition blocks | `list(any)` | `[]` | no |
 | use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
 
 ## Outputs

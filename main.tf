@@ -78,19 +78,30 @@ resource "aws_s3_bucket" "private_bucket" {
   lifecycle_rule {
     enabled = true
 
-    abort_incomplete_multipart_upload_days = 14
+    abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
 
     expiration {
       expired_object_delete_marker = true
     }
 
-    noncurrent_version_transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
+    dynamic "transition" {
+      for_each = var.transitions
+      content {
+        days          = transition.value.days
+        storage_class = transition.value.storage_class
+      }
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.noncurrent_version_transitions
+      content {
+        days          = noncurrent_version_transition.value.days
+        storage_class = noncurrent_version_transition.value.storage_class
+      }
     }
 
     noncurrent_version_expiration {
-      days = 365
+      days = var.noncurrent_version_expiration
     }
   }
 
