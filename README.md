@@ -25,7 +25,7 @@ The following lifecycle rules are set:
 
 ## Terraform Versions
 
-Terraform 0.13. Pin module version to ~> 3.X. Submit pull-requests to master branch.
+Terraform 0.13 and newer. Pin module version to ~> 3.X. Submit pull-requests to master branch.
 
 Terraform 0.12. Pin module version to ~> 2.X.  Submit pull-requests to terraform012 branch.
 
