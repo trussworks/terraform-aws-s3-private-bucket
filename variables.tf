@@ -97,3 +97,15 @@ variable "noncurrent_version_expiration" {
   type        = number
   default     = 365
 }
+
+variable "sse_algorithm" {
+  description = "The server-side encryption algorithm to use. Valid values are AES256 and aws:kms"
+  type        = string
+  default     = "AES256"
+}
+
+variable "kms_master_key_id" {
+  description = "The AWS KMS master key ID used for the SSE-KMS encryption."
+  type        = string
+  default     = ""
+}

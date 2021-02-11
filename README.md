@@ -71,10 +71,12 @@ module "aws-s3-bucket" {
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
 | enable\_versioning | Enables versioning on the bucket. | `bool` | `true` | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
+| kms\_master\_key\_id | The AWS KMS master key ID used for the SSE-KMS encryption. | `string` | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
 | noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
 | noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | <pre>[<br>  {<br>    "days": 30,<br>    "storage_class": "STANDARD_IA"<br>  }<br>]</pre> | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
+| sse\_algorithm | The server-side encryption algorithm to use. Valid values are AES256 and aws:kms | `string` | `"AES256"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | transitions | Current version transition blocks | `list(any)` | `[]` | no |
 | use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |

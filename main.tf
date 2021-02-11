@@ -136,7 +136,8 @@ resource "aws_s3_bucket" "private_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
+        sse_algorithm     = var.sse_algorithm
+        kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
       }
     }
   }
