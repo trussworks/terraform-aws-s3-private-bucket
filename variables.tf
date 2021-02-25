@@ -109,3 +109,15 @@ variable "kms_master_key_id" {
   type        = string
   default     = ""
 }
+
+variable "expiration_date" {
+  type        = string
+  default     = ""
+  description = "Specifies the date after which you want the corresponding action to take effect."
+}
+
+variable "expiration_days" {
+  type        = number
+  default     = 0
+  description = "Specifies the number of days after object creation when the specific rule action takes effect."
+}

@@ -70,6 +70,8 @@ module "aws-s3-bucket" {
 | enable\_bucket\_force\_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
 | enable\_versioning | Enables versioning on the bucket. | `bool` | `true` | no |
+| expiration\_date | Specifies the date after which you want the corresponding action to take effect. | `string` | `""` | no |
+| expiration\_days | Specifies the number of days after object creation when the specific rule action takes effect. | `number` | `0` | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | kms\_master\_key\_id | The AWS KMS master key ID used for the SSE-KMS encryption. | `string` | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
