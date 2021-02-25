@@ -81,6 +81,9 @@ resource "aws_s3_bucket" "private_bucket" {
     abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
 
     expiration {
+      date = length(var.expiration_date) > 0 ? var.expiration_date : null
+      days = var.expiration_days > 0 ? var.expiration_days : 0
+
       expired_object_delete_marker = true
     }
 
