@@ -58,6 +58,23 @@ module "aws-s3-bucket" {
 |------|---------|
 | aws | >= 3.0 |
 
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) |
+| [aws_iam_account_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_account_alias) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_partition](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) |
+| [aws_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) |
+| [aws_s3_bucket_analytics_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_analytics_configuration) |
+| [aws_s3_bucket_inventory](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_inventory) |
+| [aws_s3_bucket_public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -70,8 +87,7 @@ module "aws-s3-bucket" {
 | enable\_bucket\_force\_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
 | enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
 | enable\_versioning | Enables versioning on the bucket. | `bool` | `true` | no |
-| expiration\_date | Specifies the date after which you want the corresponding action to take effect. | `string` | `""` | no |
-| expiration\_days | Specifies the number of days after object creation when the specific rule action takes effect. | `number` | `0` | no |
+| expiration | expiration blocks | `list(any)` | <pre>[<br>  {<br>    "expired_object_delete_marker": true<br>  }<br>]</pre> | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | kms\_master\_key\_id | The AWS KMS master key ID used for the SSE-KMS encryption. | `string` | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
@@ -92,7 +108,6 @@ module "aws-s3-bucket" {
 | bucket\_regional\_domain\_name | The bucket region-specific domain name. |
 | id | The name of the bucket. |
 | name | The Name of the bucket. Will be of format bucketprefix-bucketname. |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Developer Setup
