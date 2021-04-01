@@ -229,7 +229,7 @@ func TestTerraformAwsObjectExpiration(t *testing.T) {
 	t.Parallel()
 
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/object-expiration")
-	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-transitions-%s", strings.ToLower(random.UniqueId()))
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-expiration-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
