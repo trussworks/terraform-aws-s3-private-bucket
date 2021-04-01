@@ -75,6 +75,16 @@ variable "abort_incomplete_multipart_upload_days" {
   default     = 14
 }
 
+variable "expiration" {
+  description = "expiration blocks"
+  type        = list(any)
+  default = [
+    {
+      expired_object_delete_marker = true
+    }
+  ]
+}
+
 variable "transitions" {
   description = "Current version transition blocks"
   type        = list(any)
@@ -108,16 +118,4 @@ variable "kms_master_key_id" {
   description = "The AWS KMS master key ID used for the SSE-KMS encryption."
   type        = string
   default     = ""
-}
-
-variable "expiration_date" {
-  type        = string
-  default     = ""
-  description = "Specifies the date after which you want the corresponding action to take effect."
-}
-
-variable "expiration_days" {
-  type        = number
-  default     = 0
-  description = "Specifies the number of days after object creation when the specific rule action takes effect."
 }

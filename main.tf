@@ -80,11 +80,14 @@ resource "aws_s3_bucket" "private_bucket" {
 
     abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
 
-    expiration {
-      date = length(var.expiration_date) > 0 ? var.expiration_date : null
-      days = var.expiration_days > 0 ? var.expiration_days : 0
+    dynamic "expiration" {
+      for_each = var.expiration
+      content {
+        date = lookup(expiration.value, "date", null)
+        days = lookup(expiration.value, "days", 0)
 
-      expired_object_delete_marker = true
+        expired_object_delete_marker = lookup(expiration.value, "expired_object_delete_marker", false)
+      }
     }
 
     dynamic "transition" {
