@@ -224,3 +224,28 @@ func TestTerraformAwsCustomTransitions(t *testing.T) {
 	aws.AssertS3BucketExists(t, awsRegion, testName)
 
 }
+
+func TestTerraformAwsObjectExpiration(t *testing.T) {
+	t.Parallel()
+
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/object-expiration")
+	testName := fmt.Sprintf("terratest-aws-s3-private-bucket-expiration-%s", strings.ToLower(random.UniqueId()))
+	awsRegion := "us-west-2"
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: tempTestFolder,
+		Vars: map[string]interface{}{
+			"test_name": testName,
+		},
+		EnvVars: map[string]string{
+			"AWS_DEFAULT_REGION": awsRegion,
+		},
+	}
+
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	aws.AssertS3BucketExists(t, awsRegion, testName)
+
+}
