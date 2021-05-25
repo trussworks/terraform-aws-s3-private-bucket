@@ -84,7 +84,7 @@ func AssertS3BucketEncryptionEnabled(t *testing.T, terraformOptions *terraform.O
 			for _, element := range encryption.ServerSideEncryptionConfiguration.Rules {
 				actualEncryption := element.ApplyServerSideEncryptionByDefault.SSEAlgorithm
 				if *actualEncryption != expectedEncryption {
-					return "", fmt.Errorf("server side encyption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
+					return "", fmt.Errorf("server side encryption test failed. got: %v, expected: %v", actualEncryption, expectedEncryption)
 				}
 			}
 			return "Retrieved bucket encryption", nil
