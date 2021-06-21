@@ -179,6 +179,7 @@ resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  count = var.enable_s3_public_access_block ? 1 : 0
   bucket = aws_s3_bucket.private_bucket.id
 
   # Block new public ACLs and uploading public objects
