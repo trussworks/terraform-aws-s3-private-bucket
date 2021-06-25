@@ -117,6 +117,27 @@ func AssertS3BucketPublicAccessBlockConfigurationEnabled(t *testing.T, terraform
 	}
 }
 
+func AssertS3BucketPublicAccessBlockConfigurationDisabled(t *testing.T, terraformOptions *terraform.Options) {
+	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
+	s3Client, err := aws.NewS3ClientE(t, region)
+	if err != nil {
+		assert.FailNow(t, "Error creating s3client")
+		return
+	}
+
+	bucketName := terraformOptions.Vars["test_name"].(string)
+	params := &s3.GetPublicAccessBlockInput{
+		Bucket: awssdk.String(bucketName),
+	}
+
+	_, err = s3Client.GetPublicAccessBlock(params)
+
+	if err != nil {
+		return
+	}
+	assert.FailNow(t, "Public access block created and should not have been")
+}
+
 func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Options) {
 	region := terraformOptions.EnvVars["AWS_DEFAULT_REGION"]
 	s3Client, err := aws.NewS3ClientE(t, region)
