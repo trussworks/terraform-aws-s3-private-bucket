@@ -20,14 +20,14 @@ repos:
       - id: trailing-whitespace
 
   - repo: git://github.com/golangci/golangci-lint
-    rev: v1.39.0
+    rev: v1.41.1
     hooks:
       - id: golangci-lint
         entry: golangci-lint run
         verbose: true
 
   - repo: git://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.48.0
+    rev: v1.50.0
     hooks:
       - id: terraform_docs
       - id: terraform_fmt
