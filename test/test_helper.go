@@ -135,7 +135,7 @@ func AssertS3BucketPublicAccessBlockConfigurationDisabled(t *testing.T, terrafor
 	if err != nil {
 		return
 	}
-	assert.FailNow(t, "Public access block created and should not have been")
+	assert.Equal(t, "NoSuchPublicAccessBlockConfiguration", err)
 }
 
 func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Options) {
