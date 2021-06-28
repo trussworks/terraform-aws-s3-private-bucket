@@ -11,6 +11,7 @@ import (
 
 	awssdk "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3control"
 
 	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/retry"
@@ -133,9 +134,10 @@ func AssertS3BucketPublicAccessBlockConfigurationDisabled(t *testing.T, terrafor
 	_, err = s3Client.GetPublicAccessBlock(params)
 
 	if err != nil {
+		assert.Contains(t, err.Error(), s3control.ErrCodeNoSuchPublicAccessBlockConfiguration)
 		return
 	}
-	assert.Equal(t, "NoSuchPublicAccessBlockConfiguration", err)
+	assert.FailNow(t, "Public Access Block found but should not have been created.") //log the error
 }
 
 func AssertS3BucketLoggingEnabled(t *testing.T, terraformOptions *terraform.Options) {
