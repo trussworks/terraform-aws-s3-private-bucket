@@ -125,3 +125,9 @@ variable "enable_s3_public_access_block" {
   type        = bool
   default     = true
 }
+
+variable "bucket_key_enabled" {
+  description = "Whether or not to use Amazon S3 Bucket Keys for SSE-KMS."
+  type        = bool
+  default     = false
+}

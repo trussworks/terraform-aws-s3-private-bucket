@@ -145,6 +145,7 @@ resource "aws_s3_bucket" "private_bucket" {
         sse_algorithm     = var.sse_algorithm
         kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
       }
+      bucket_key_enabled = var.bucket_key_enabled
     }
   }
 
