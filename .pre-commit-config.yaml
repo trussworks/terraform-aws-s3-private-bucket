@@ -33,6 +33,6 @@ repos:
       - id: terraform_fmt
 
   - repo: git://github.com/igorshubovych/markdownlint-cli
-    rev: v0.27.1
+    rev: v0.28.1
     hooks:
       - id: markdownlint
