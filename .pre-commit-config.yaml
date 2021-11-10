@@ -36,3 +36,4 @@ repos:
     rev: v0.28.1
     hooks:
       - id: markdownlint
+        args: [--timeout=3m]
