@@ -23,7 +23,7 @@ repos:
     rev: v1.42.0
     hooks:
       - id: golangci-lint
-        entry: golangci-lint run
+        args: [--timeout=3m]
         verbose: true
 
   - repo: git://github.com/antonbabenko/pre-commit-terraform
@@ -36,4 +36,3 @@ repos:
     rev: v0.28.1
     hooks:
       - id: markdownlint
-        args: [--timeout=3m]
