@@ -20,10 +20,10 @@ repos:
       - id: trailing-whitespace
 
   - repo: git://github.com/golangci/golangci-lint
-    rev: v1.42.0
+    rev: v1.41.1
     hooks:
       - id: golangci-lint
-        entry: golangci-lint run
+        args: [--timeout=3m]
         verbose: true
 
   - repo: git://github.com/antonbabenko/pre-commit-terraform
