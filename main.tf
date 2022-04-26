@@ -71,10 +71,6 @@ resource "aws_s3_bucket" "private_bucket" {
   policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
-  versioning {
-    enabled = var.enable_versioning
-  }
-
   lifecycle_rule {
     enabled = true
 
@@ -159,6 +155,14 @@ resource "aws_s3_bucket" "private_bucket" {
       expose_headers  = lookup(cors_rule.value, "expose_headers", null)
       max_age_seconds = lookup(cors_rule.value, "max_age_seconds", null)
     }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+
+  versioning_configuration {
+    status = var.versioning_status
   }
 }
 

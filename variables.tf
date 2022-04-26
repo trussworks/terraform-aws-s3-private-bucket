@@ -63,10 +63,14 @@ variable "cors_rules" {
   default     = []
 }
 
-variable "enable_versioning" {
-  description = "Enables versioning on the bucket."
-  type        = bool
-  default     = true
+variable "versioning_status" {
+  description = "A string that indicates the versioning status for the log bucket."
+  default     = "Enabled"
+  type        = string
+  validation {
+    condition     = contains(["Enabled", "Disabled", "Suspended"], var.versioning_status)
+    error_message = "Valid values for versioning_status are Enabled, Disabled, or Suspended."
+  }
 }
 
 variable "abort_incomplete_multipart_upload_days" {
