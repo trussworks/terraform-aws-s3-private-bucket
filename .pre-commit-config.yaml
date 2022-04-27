@@ -24,7 +24,6 @@ repos:
     hooks:
       - id: golangci-lint
         args: [--timeout=3m]
-        verbose: true
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.69.0
