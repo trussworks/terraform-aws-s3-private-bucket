@@ -11,7 +11,16 @@ locals {
 
 data "aws_iam_policy_document" "supplemental_policy" {
 
-  source_json = var.custom_bucket_policy
+  # This should be a single line:
+  # source_policy_documents = [var.custom_bucket_policy]
+  #
+  # However, there appears to be a bug that occurs when source_policy_documents is an empty string:
+  # - https://github.com/hashicorp/terraform-provider-aws/issues/22959
+  # - https://github.com/hashicorp/terraform-provider-aws/issues/24366
+  #
+  # To work around this, we're using this workaround. It should be replaced
+  # once the underlying issue is addressed.
+  source_policy_documents = length(var.custom_bucket_policy) > 0 ? [var.custom_bucket_policy] : null
 
   #
   # Enforce SSL/TLS on all transmitted objects
