@@ -71,18 +71,6 @@ resource "aws_s3_bucket" "private_bucket" {
   policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
-  dynamic "cors_rule" {
-    for_each = var.cors_rules
-
-    content {
-      allowed_methods = cors_rule.value.allowed_methods
-      allowed_origins = cors_rule.value.allowed_origins
-      allowed_headers = lookup(cors_rule.value, "allowed_headers", null)
-      expose_headers  = lookup(cors_rule.value, "expose_headers", null)
-      max_age_seconds = lookup(cors_rule.value, "max_age_seconds", null)
-    }
-  }
-
   lifecycle {
     # These lifecycle ignore_changes rules exist to permit a smooth upgrade
     # path from version 3.x of the AWS provider to version 4.x
@@ -101,6 +89,9 @@ resource "aws_s3_bucket" "private_bucket" {
       # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_acl#usage-notes
       acl,
       grant,
+
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_cors_configuration#usage-notes
+      cors_rule,
 
       # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_lifecycle_configuration#usage-notes
       lifecycle_rule,
@@ -212,6 +203,20 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "private_bucket" {
       kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
     }
     bucket_key_enabled = var.bucket_key_enabled
+  }
+}
+
+resource "aws_s3_bucket_cors_configuration" "private_bucket" {
+  count = length(var.cors_rules)
+
+  bucket = aws_s3_bucket.private_bucket.bucket
+
+  cors_rule {
+    allowed_methods = var.cors_rules[count.index].allowed_methods
+    allowed_origins = var.cors_rules[count.index].allowed_origins
+    allowed_headers = lookup(var.cors_rules[count.index], "allowed_headers", null)
+    expose_headers  = lookup(var.cors_rules[count.index], "expose_headers", null)
+    max_age_seconds = lookup(var.cors_rules[count.index], "max_age_seconds", null)
   }
 }
 
