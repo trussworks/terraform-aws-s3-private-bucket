@@ -71,16 +71,6 @@ resource "aws_s3_bucket" "private_bucket" {
   policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm     = var.sse_algorithm
-        kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
-      }
-      bucket_key_enabled = var.bucket_key_enabled
-    }
-  }
-
   dynamic "cors_rule" {
     for_each = var.cors_rules
 
@@ -211,6 +201,18 @@ resource "aws_s3_bucket_logging" "private_bucket" {
 
   target_bucket = var.logging_bucket
   target_prefix = "s3/${local.bucket_id}/"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = var.sse_algorithm
+      kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
+    }
+    bucket_key_enabled = var.bucket_key_enabled
+  }
 }
 
 resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
