@@ -71,14 +71,6 @@ resource "aws_s3_bucket" "private_bucket" {
   policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
-  dynamic "logging" {
-    for_each = local.enable_bucket_logging ? [1] : []
-    content {
-      target_bucket = var.logging_bucket
-      target_prefix = "s3/${local.bucket_id}/"
-    }
-  }
-
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -210,6 +202,15 @@ resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
       days = 30
     }
   }
+}
+
+resource "aws_s3_bucket_logging" "private_bucket" {
+  count = local.enable_bucket_logging ? 1 : 0
+
+  bucket = aws_s3_bucket.private_bucket.id
+
+  target_bucket = var.logging_bucket
+  target_prefix = "s3/${local.bucket_id}/"
 }
 
 resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
