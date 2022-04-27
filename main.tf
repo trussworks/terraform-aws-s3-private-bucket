@@ -66,7 +66,6 @@ data "aws_iam_policy_document" "supplemental_policy" {
 
 resource "aws_s3_bucket" "private_bucket" {
   bucket        = local.bucket_id
-  acl           = "private"
   tags          = var.tags
   force_destroy = var.enable_bucket_force_destroy
 
@@ -107,6 +106,11 @@ resource "aws_s3_bucket" "private_bucket" {
 resource "aws_s3_bucket_policy" "private_bucket" {
   bucket = aws_s3_bucket.private_bucket.id
   policy = data.aws_iam_policy_document.supplemental_policy.json
+}
+
+resource "aws_s3_bucket_acl" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_versioning" "private_bucket" {
