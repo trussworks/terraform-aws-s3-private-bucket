@@ -38,7 +38,7 @@ func TestTerraformAwsS3PrivateBucket(t *testing.T) {
 			"logging_bucket":    loggingBucket,
 			"enable_analytics":  true,
 			"cors_rules":        []corsRule{rule},
-			"enable_versioning": true,
+			"versioning_status": "Enabled",
 		},
 
 		// Environment variables to set when running Terraform
@@ -82,7 +82,7 @@ func TestTerraformAwsS3PrivateBucketWithoutAnalytics(t *testing.T) {
 			"test_name":         testName,
 			"logging_bucket":    loggingBucket,
 			"enable_analytics":  false,
-			"enable_versioning": true,
+			"versioning_status": "Enabled",
 		},
 
 		// Environment variables to set when running Terraform
