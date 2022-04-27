@@ -68,7 +68,6 @@ resource "aws_s3_bucket" "private_bucket" {
   bucket        = local.bucket_id
   acl           = "private"
   tags          = var.tags
-  policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
   lifecycle {
@@ -103,6 +102,11 @@ resource "aws_s3_bucket" "private_bucket" {
       server_side_encryption_configuration,
     ]
   }
+}
+
+resource "aws_s3_bucket_policy" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+  policy = data.aws_iam_policy_document.supplemental_policy.json
 }
 
 resource "aws_s3_bucket_versioning" "private_bucket" {
