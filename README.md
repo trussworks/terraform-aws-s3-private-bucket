@@ -119,6 +119,45 @@ No modules.
 | <a name="output_name"></a> [name](#output\_name) | The Name of the bucket. Will be of format bucketprefix-bucketname. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
+## Upgrade Paths
+
+### Upgrading from 3.x.x to 4.x.x
+
+Version 4.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
+
+- `aws_s3_bucket_policy.private_bucket`
+- `aws_s3_bucket_acl.private_bucket`
+- `aws_s3_bucket_versioning.private_bucket`
+- `aws_s3_bucket_lifecycle_configuration.private_bucket`
+- `aws_s3_bucket_logging.private_bucket`
+- `aws_s3_bucket_server_side_encryption_configuration.private_bucket`
+- `aws_s3_bucket_cors_configuration.private_bucket`
+
+This module version removes the `enable_versioning` variable (boolean) and replaces it with the `versioning_status` variable (string). There are three possible values for this variable: `Enabled`, `Disabled`, and `Suspended`. If at one point versioning was enabled on your bucket, but has since been turned off, you will need to set `versioning_status` to `Suspended` rather than `Disabled`.
+
+Additionally, this version of the module requires a minimum AWS provider version of 3.75, so that you can remain on the 3.x AWS provider while still gaining the ability to utilize the new S3 resources introduced in the 4.x AWS provider.
+
+There are two general approaches to performing this upgrade:
+
+1. Upgrade the module version and run `terraform plan` followed by `terraform apply`, which will create the new Terraform resources.
+1. Perform `terraform import` commands, which accomplishes the same thing without running `terraform apply`. This is the more cautious route.
+
+If you choose to take the route of running `terraform import`, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,private` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `private`. If you have not configured a target bucket using the `logging_bucket` input variable, then you don't need to import the `aws_s3_bucket_logging` Terraform resource.
+
+```sh
+terraform import module.example.aws_s3_bucket_policy.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_acl.private_bucket your-bucket-name-here,private
+terraform import module.example.aws_s3_bucket_versioning.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_lifecycle_configuration.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_server_side_encryption_configuration.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_cors_configuration.private_bucket your-bucket-name-here
+# Optionally run these two commands if you have configured the logging_bucket input variable.
+terraform import module.example.aws_s3_bucket_logging.private_bucket your-bucket-name-here
+terraform state mv 'module.example.aws_s3_bucket_logging.private_bucket' 'module.example.aws_s3_bucket_logging.private_bucket[0]'
+```
+
+After this, you will need to run a `terraform plan` and `terraform apply` to apply some non-functional changes to lifecycle rule IDs.
+
 ## Developer Setup
 
 Install dependencies (macOS)
