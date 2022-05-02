@@ -71,62 +71,6 @@ resource "aws_s3_bucket" "private_bucket" {
   policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
-  lifecycle_rule {
-    enabled = true
-
-    abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
-
-    dynamic "expiration" {
-      for_each = var.expiration
-      content {
-        date = lookup(expiration.value, "date", null)
-        days = lookup(expiration.value, "days", 0)
-
-        expired_object_delete_marker = lookup(expiration.value, "expired_object_delete_marker", false)
-      }
-    }
-
-    dynamic "transition" {
-      for_each = var.transitions
-      content {
-        days          = transition.value.days
-        storage_class = transition.value.storage_class
-      }
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.noncurrent_version_transitions
-      content {
-        days          = noncurrent_version_transition.value.days
-        storage_class = noncurrent_version_transition.value.storage_class
-      }
-    }
-
-    noncurrent_version_expiration {
-      days = var.noncurrent_version_expiration
-    }
-  }
-
-  lifecycle_rule {
-    enabled = true
-
-    prefix = "_AWSBucketInventory/"
-
-    expiration {
-      days = 14
-    }
-  }
-
-  lifecycle_rule {
-    enabled = true
-
-    prefix = "_AWSBucketAnalytics/"
-
-    expiration {
-      days = 30
-    }
-  }
-
   dynamic "logging" {
     for_each = local.enable_bucket_logging ? [1] : []
     content {
@@ -193,6 +137,78 @@ resource "aws_s3_bucket_versioning" "private_bucket" {
 
   versioning_configuration {
     status = var.versioning_status
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+
+  rule {
+    id = "abort-incomplete-multipart-upload"
+
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.abort_incomplete_multipart_upload_days
+    }
+
+    dynamic "expiration" {
+      for_each = var.expiration
+      content {
+        date = lookup(expiration.value, "date", null)
+        days = lookup(expiration.value, "days", 0)
+
+        expired_object_delete_marker = lookup(expiration.value, "expired_object_delete_marker", false)
+      }
+    }
+
+    dynamic "transition" {
+      for_each = var.transitions
+      content {
+        days          = transition.value.days
+        storage_class = transition.value.storage_class
+      }
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.noncurrent_version_transitions
+      content {
+        noncurrent_days = noncurrent_version_transition.value.days
+        storage_class   = noncurrent_version_transition.value.storage_class
+      }
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.noncurrent_version_expiration
+    }
+  }
+
+  rule {
+    id = "aws-bucket-inventory"
+
+    status = "Enabled"
+
+    filter {
+      prefix = "_AWSBucketInventory/"
+    }
+
+    expiration {
+      days = 14
+    }
+  }
+
+  rule {
+    id = "aws-bucket-analytics"
+
+    status = "Enabled"
+
+    filter {
+      prefix = "_AWSBucketAnalytics/"
+    }
+
+    expiration {
+      days = 30
+    }
   }
 }
 
