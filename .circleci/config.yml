@@ -6,14 +6,13 @@ jobs:
         username: $DOCKER_USERNAME
       environment:
       - TEST_RESULTS: /tmp/test-results
-      image: trussworks/circleci:03d0d0dcd05dad6cc03b570e5128c735ea90c80f
+      image: trussworks/circleci:2218890b0ada8cec21782f9799329c4422fa362b
     steps:
     - checkout
     - restore_cache:
         keys:
         - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-        - go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version"
-          }}
+        - go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version" }}
     - run:
         command: |
           echo 'export PATH=${PATH}:~/go/bin' >> $BASH_ENV
@@ -33,8 +32,7 @@ jobs:
         paths:
         - ~/.cache
     - save_cache:
-        key: go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version"
-          }}
+        key: go-mod-sources-v1-{{ checksum "go.sum" }}-{{ checksum "bin/check-go-version" }}
         paths:
         - ~/go/pkg/mod
     - store_test_results:

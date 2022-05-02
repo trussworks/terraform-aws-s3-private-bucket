@@ -1,8 +1,8 @@
 linters:
   enable:
      - gosec
-     - golint
      - gofmt
      - goimports
+     - revive
   disable:
     - typecheck

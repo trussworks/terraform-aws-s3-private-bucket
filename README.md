@@ -50,13 +50,13 @@ module "aws-s3-bucket" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0, < 4.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.75.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0, < 4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.75.0 |
 
 ## Modules
 
@@ -67,9 +67,16 @@ No modules.
 | Name | Type |
 |------|------|
 | [aws_s3_bucket.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_acl.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl) | resource |
 | [aws_s3_bucket_analytics_configuration.private_analytics_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_analytics_configuration) | resource |
+| [aws_s3_bucket_cors_configuration.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_cors_configuration) | resource |
 | [aws_s3_bucket_inventory.inventory](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_inventory) | resource |
+| [aws_s3_bucket_lifecycle_configuration.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_logging.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
+| [aws_s3_bucket_policy.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
+| [aws_s3_bucket_server_side_encryption_configuration.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
+| [aws_s3_bucket_versioning.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_account_alias.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_account_alias) | data source |
 | [aws_iam_policy_document.supplemental_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -88,7 +95,6 @@ No modules.
 | <a name="input_enable_bucket_force_destroy"></a> [enable\_bucket\_force\_destroy](#input\_enable\_bucket\_force\_destroy) | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
 | <a name="input_enable_bucket_inventory"></a> [enable\_bucket\_inventory](#input\_enable\_bucket\_inventory) | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
 | <a name="input_enable_s3_public_access_block"></a> [enable\_s3\_public\_access\_block](#input\_enable\_s3\_public\_access\_block) | Bool for toggling whether the s3 public access block resource should be enabled. | `bool` | `true` | no |
-| <a name="input_enable_versioning"></a> [enable\_versioning](#input\_enable\_versioning) | Enables versioning on the bucket. | `bool` | `true` | no |
 | <a name="input_expiration"></a> [expiration](#input\_expiration) | expiration blocks | `list(any)` | <pre>[<br>  {<br>    "expired_object_delete_marker": true<br>  }<br>]</pre> | no |
 | <a name="input_inventory_bucket_format"></a> [inventory\_bucket\_format](#input\_inventory\_bucket\_format) | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | <a name="input_kms_master_key_id"></a> [kms\_master\_key\_id](#input\_kms\_master\_key\_id) | The AWS KMS master key ID used for the SSE-KMS encryption. | `string` | `""` | no |
@@ -100,6 +106,7 @@ No modules.
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | <a name="input_transitions"></a> [transitions](#input\_transitions) | Current version transition blocks | `list(any)` | `[]` | no |
 | <a name="input_use_account_alias_prefix"></a> [use\_account\_alias\_prefix](#input\_use\_account\_alias\_prefix) | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
+| <a name="input_versioning_status"></a> [versioning\_status](#input\_versioning\_status) | A string that indicates the versioning status for the log bucket. | `string` | `"Enabled"` | no |
 
 ## Outputs
 
@@ -111,6 +118,45 @@ No modules.
 | <a name="output_id"></a> [id](#output\_id) | The name of the bucket. |
 | <a name="output_name"></a> [name](#output\_name) | The Name of the bucket. Will be of format bucketprefix-bucketname. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Upgrade Paths
+
+### Upgrading from 3.x.x to 4.x.x
+
+Version 4.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
+
+- `aws_s3_bucket_policy.private_bucket`
+- `aws_s3_bucket_acl.private_bucket`
+- `aws_s3_bucket_versioning.private_bucket`
+- `aws_s3_bucket_lifecycle_configuration.private_bucket`
+- `aws_s3_bucket_logging.private_bucket`
+- `aws_s3_bucket_server_side_encryption_configuration.private_bucket`
+- `aws_s3_bucket_cors_configuration.private_bucket`
+
+This module version removes the `enable_versioning` variable (boolean) and replaces it with the `versioning_status` variable (string). There are three possible values for this variable: `Enabled`, `Disabled`, and `Suspended`. If at one point versioning was enabled on your bucket, but has since been turned off, you will need to set `versioning_status` to `Suspended` rather than `Disabled`.
+
+Additionally, this version of the module requires a minimum AWS provider version of 3.75, so that you can remain on the 3.x AWS provider while still gaining the ability to utilize the new S3 resources introduced in the 4.x AWS provider.
+
+There are two general approaches to performing this upgrade:
+
+1. Upgrade the module version and run `terraform plan` followed by `terraform apply`, which will create the new Terraform resources.
+1. Perform `terraform import` commands, which accomplishes the same thing without running `terraform apply`. This is the more cautious route.
+
+If you choose to take the route of running `terraform import`, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,private` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `private`. If you have not configured a target bucket using the `logging_bucket` input variable, then you don't need to import the `aws_s3_bucket_logging` Terraform resource.
+
+```sh
+terraform import module.example.aws_s3_bucket_policy.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_acl.private_bucket your-bucket-name-here,private
+terraform import module.example.aws_s3_bucket_versioning.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_lifecycle_configuration.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_server_side_encryption_configuration.private_bucket your-bucket-name-here
+terraform import module.example.aws_s3_bucket_cors_configuration.private_bucket your-bucket-name-here
+# Optionally run these two commands if you have configured the logging_bucket input variable.
+terraform import module.example.aws_s3_bucket_logging.private_bucket your-bucket-name-here
+terraform state mv 'module.example.aws_s3_bucket_logging.private_bucket' 'module.example.aws_s3_bucket_logging.private_bucket[0]'
+```
+
+After this, you will need to run a `terraform plan` and `terraform apply` to apply some non-functional changes to lifecycle rule IDs.
 
 ## Developer Setup
 

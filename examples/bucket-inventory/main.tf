@@ -8,8 +8,12 @@ module "s3_private_bucket" {
 
   bucket                   = var.test_name
   use_account_alias_prefix = false
-  logging_bucket           = module.s3_logs.aws_logs_bucket
+  logging_bucket           = var.logging_bucket
   enable_bucket_inventory  = true
+
+  depends_on = [
+    module.s3_logs
+  ]
 }
 
 #
