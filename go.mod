@@ -3,8 +3,8 @@ module github.com/trussworks/terraform-aws-s3-private-bucket
 go 1.17
 
 require (
-	github.com/aws/aws-sdk-go v1.44.32
-	github.com/gruntwork-io/terratest v0.40.16
+	github.com/aws/aws-sdk-go v1.44.37
+	github.com/gruntwork-io/terratest v0.40.17
 	github.com/stretchr/testify v1.7.2
 )
 
