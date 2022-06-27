@@ -6,7 +6,7 @@ variable "bucket" {
 variable "use_random_suffix" {
   description = "Whether to add a random suffix to the bucket name."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "use_account_alias_prefix" {
