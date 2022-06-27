@@ -11,7 +11,16 @@ locals {
 
 data "aws_iam_policy_document" "supplemental_policy" {
 
-  source_json = var.custom_bucket_policy
+  # This should be a single line:
+  # source_policy_documents = [var.custom_bucket_policy]
+  #
+  # However, there appears to be a bug that occurs when source_policy_documents is an empty string:
+  # - https://github.com/hashicorp/terraform-provider-aws/issues/22959
+  # - https://github.com/hashicorp/terraform-provider-aws/issues/24366
+  #
+  # To work around this, we're using this workaround. It should be replaced
+  # once the underlying issue is addressed.
+  source_policy_documents = length(var.custom_bucket_policy) > 0 ? [var.custom_bucket_policy] : null
 
   #
   # Enforce SSL/TLS on all transmitted objects
@@ -69,17 +78,71 @@ resource "aws_s3_bucket" "private_bucket" {
   bucket_prefix = use_random_suffix ? local.bucket_id : ""
   acl           = "private"
   tags          = var.tags
-  policy        = data.aws_iam_policy_document.supplemental_policy.json
   force_destroy = var.enable_bucket_force_destroy
 
-  versioning {
-    enabled = var.enable_versioning
+  lifecycle {
+    # These lifecycle ignore_changes rules exist to permit a smooth upgrade
+    # path from version 3.x of the AWS provider to version 4.x
+    ignore_changes = [
+      # While no special usage instructions are documented for needing this
+      # ignore_changes rule, changes are still detected during the upgrade
+      # process, so this serves to avoid drift detection since the
+      # aws_s3_bucket_policy will be used instead.
+      policy,
+
+      # While no special usage instructions are documented for needing this
+      # ignore_changes rule, this should avoid drift detection if conflicts
+      # with the aws_s3_bucket_versioning exist.
+      versioning,
+
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_acl#usage-notes
+      acl,
+      grant,
+
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_cors_configuration#usage-notes
+      cors_rule,
+
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_lifecycle_configuration#usage-notes
+      lifecycle_rule,
+
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_logging#usage-notes
+      logging,
+
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_server_side_encryption_configuration#usage-notes
+      server_side_encryption_configuration,
+    ]
   }
+}
 
-  lifecycle_rule {
-    enabled = true
+resource "aws_s3_bucket_policy" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+  policy = data.aws_iam_policy_document.supplemental_policy.json
+}
 
-    abort_incomplete_multipart_upload_days = var.abort_incomplete_multipart_upload_days
+resource "aws_s3_bucket_acl" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+
+  versioning_configuration {
+    status = var.versioning_status
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+
+  rule {
+    id = "abort-incomplete-multipart-upload"
+
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.abort_incomplete_multipart_upload_days
+    }
 
     dynamic "expiration" {
       for_each = var.expiration
@@ -102,64 +165,77 @@ resource "aws_s3_bucket" "private_bucket" {
     dynamic "noncurrent_version_transition" {
       for_each = var.noncurrent_version_transitions
       content {
-        days          = noncurrent_version_transition.value.days
-        storage_class = noncurrent_version_transition.value.storage_class
+        noncurrent_days = noncurrent_version_transition.value.days
+        storage_class   = noncurrent_version_transition.value.storage_class
       }
     }
 
     noncurrent_version_expiration {
-      days = var.noncurrent_version_expiration
+      noncurrent_days = var.noncurrent_version_expiration
     }
   }
 
-  lifecycle_rule {
-    enabled = true
+  rule {
+    id = "aws-bucket-inventory"
 
-    prefix = "_AWSBucketInventory/"
+    status = "Enabled"
+
+    filter {
+      prefix = "_AWSBucketInventory/"
+    }
 
     expiration {
       days = 14
     }
   }
 
-  lifecycle_rule {
-    enabled = true
+  rule {
+    id = "aws-bucket-analytics"
 
-    prefix = "_AWSBucketAnalytics/"
+    status = "Enabled"
+
+    filter {
+      prefix = "_AWSBucketAnalytics/"
+    }
 
     expiration {
       days = 30
     }
   }
+}
 
-  dynamic "logging" {
-    for_each = local.enable_bucket_logging ? [1] : []
-    content {
-      target_bucket = var.logging_bucket
-      target_prefix = "s3/${local.bucket_id}/"
+resource "aws_s3_bucket_logging" "private_bucket" {
+  count = local.enable_bucket_logging ? 1 : 0
+
+  bucket = aws_s3_bucket.private_bucket.id
+
+  target_bucket = var.logging_bucket
+  target_prefix = "s3/${local.bucket_id}/"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "private_bucket" {
+  bucket = aws_s3_bucket.private_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = var.sse_algorithm
+      kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
     }
+    bucket_key_enabled = var.bucket_key_enabled
   }
+}
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm     = var.sse_algorithm
-        kms_master_key_id = length(var.kms_master_key_id) > 0 ? var.kms_master_key_id : null
-      }
-      bucket_key_enabled = var.bucket_key_enabled
-    }
-  }
+resource "aws_s3_bucket_cors_configuration" "private_bucket" {
+  count = length(var.cors_rules)
 
-  dynamic "cors_rule" {
-    for_each = var.cors_rules
+  bucket = aws_s3_bucket.private_bucket.bucket
 
-    content {
-      allowed_methods = cors_rule.value.allowed_methods
-      allowed_origins = cors_rule.value.allowed_origins
-      allowed_headers = lookup(cors_rule.value, "allowed_headers", null)
-      expose_headers  = lookup(cors_rule.value, "expose_headers", null)
-      max_age_seconds = lookup(cors_rule.value, "max_age_seconds", null)
-    }
+  cors_rule {
+    allowed_methods = var.cors_rules[count.index].allowed_methods
+    allowed_origins = var.cors_rules[count.index].allowed_origins
+    allowed_headers = lookup(var.cors_rules[count.index], "allowed_headers", null)
+    expose_headers  = lookup(var.cors_rules[count.index], "expose_headers", null)
+    max_age_seconds = lookup(var.cors_rules[count.index], "max_age_seconds", null)
   }
 }
 

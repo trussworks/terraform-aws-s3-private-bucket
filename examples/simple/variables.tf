@@ -15,6 +15,6 @@ variable "cors_rules" {
   default = []
 }
 
-variable "enable_versioning" {
-  type = bool
+variable "versioning_status" {
+  type = string
 }
