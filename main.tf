@@ -65,7 +65,8 @@ data "aws_iam_policy_document" "supplemental_policy" {
 }
 
 resource "aws_s3_bucket" "private_bucket" {
-  bucket        = local.bucket_id
+  bucket        = use_random_suffix ? "" : local.bucket_id
+  bucket_prefix = use_random_suffix ? local.bucket_id : ""
   acl           = "private"
   tags          = var.tags
   policy        = data.aws_iam_policy_document.supplemental_policy.json
