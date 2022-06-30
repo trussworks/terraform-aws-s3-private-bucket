@@ -3,6 +3,12 @@ variable "bucket" {
   type        = string
 }
 
+variable "use_random_suffix" {
+  description = "Whether to add a random suffix to the bucket name."
+  type        = bool
+  default     = false
+}
+
 variable "use_account_alias_prefix" {
   description = "Whether to prefix the bucket name with the AWS account alias."
   type        = string

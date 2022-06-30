@@ -106,6 +106,7 @@ No modules.
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | <a name="input_transitions"></a> [transitions](#input\_transitions) | Current version transition blocks | `list(any)` | `[]` | no |
 | <a name="input_use_account_alias_prefix"></a> [use\_account\_alias\_prefix](#input\_use\_account\_alias\_prefix) | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
+| <a name="input_use_random_suffix"></a> [use\_random\_suffix](#input\_use\_random\_suffix) | Whether to add a random suffix to the bucket name. | `bool` | `false` | no |
 | <a name="input_versioning_status"></a> [versioning\_status](#input\_versioning\_status) | A string that indicates the versioning status for the log bucket. | `string` | `"Enabled"` | no |
 
 ## Outputs

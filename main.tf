@@ -74,7 +74,9 @@ data "aws_iam_policy_document" "supplemental_policy" {
 }
 
 resource "aws_s3_bucket" "private_bucket" {
-  bucket        = local.bucket_id
+  bucket        = var.use_random_suffix ? null : local.bucket_id
+  bucket_prefix = var.use_random_suffix ? local.bucket_id : null
+  acl           = "private"
   tags          = var.tags
   force_destroy = var.enable_bucket_force_destroy
 
