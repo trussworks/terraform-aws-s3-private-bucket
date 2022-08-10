@@ -1,8 +1,10 @@
 data "aws_iam_account_alias" "current" {
   count = var.use_account_alias_prefix ? 1 : 0
 }
+
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
+
 locals {
   bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current[0].account_alias) : ""
   bucket_id             = "${local.bucket_prefix}${var.bucket}"
@@ -10,7 +12,6 @@ locals {
 }
 
 data "aws_iam_policy_document" "supplemental_policy" {
-
   # This should be a single line:
   # source_policy_documents = [var.custom_bucket_policy]
   #
@@ -22,21 +23,24 @@ data "aws_iam_policy_document" "supplemental_policy" {
   # once the underlying issue is addressed.
   source_policy_documents = length(var.custom_bucket_policy) > 0 ? [var.custom_bucket_policy] : null
 
-  #
   # Enforce SSL/TLS on all transmitted objects
   # We do this by extending the custom_bucket_policy
-  #
   statement {
-    sid    = "enforce-tls-requests-only"
+    sid = "enforce-tls-requests-only"
+
     effect = "Deny"
+
     principals {
       type        = "AWS"
       identifiers = ["*"]
     }
+
     actions = ["s3:*"]
+
     resources = [
       "arn:${data.aws_partition.current.partition}:s3:::${local.bucket_id}/*"
     ]
+
     condition {
       test     = "Bool"
       variable = "aws:SecureTransport"
@@ -45,26 +49,33 @@ data "aws_iam_policy_document" "supplemental_policy" {
   }
 
   statement {
-    sid    = "inventory-and-analytics"
+    sid = "inventory-and-analytics"
+
     effect = "Allow"
+
     principals {
       type        = "Service"
       identifiers = ["s3.amazonaws.com"]
     }
+
     actions = ["s3:PutObject"]
+
     resources = [
       "arn:${data.aws_partition.current.partition}:s3:::${local.bucket_id}/*"
     ]
+
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
       values   = ["arn:${data.aws_partition.current.partition}:s3:::${local.bucket_id}"]
     }
+
     condition {
       test     = "StringEquals"
       variable = "aws:SourceAccount"
       values   = [data.aws_caller_identity.current.account_id]
     }
+
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-acl"
@@ -76,7 +87,6 @@ data "aws_iam_policy_document" "supplemental_policy" {
 resource "aws_s3_bucket" "private_bucket" {
   bucket        = var.use_random_suffix ? null : local.bucket_id
   bucket_prefix = var.use_random_suffix ? local.bucket_id : null
-  acl           = "private"
   tags          = var.tags
   force_destroy = var.enable_bucket_force_destroy
 
@@ -95,20 +105,21 @@ resource "aws_s3_bucket" "private_bucket" {
       # with the aws_s3_bucket_versioning exist.
       versioning,
 
-      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_acl#usage-notes
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.2/docs/resources/s3_bucket_acl#usage-notes
+      acceleration_status,
       acl,
       grant,
 
-      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_cors_configuration#usage-notes
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.2/docs/resources/s3_bucket_cors_configuration#usage-notes
       cors_rule,
 
-      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_lifecycle_configuration#usage-notes
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.2/docs/resources/s3_bucket_lifecycle_configuration#usage-notes
       lifecycle_rule,
 
-      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_logging#usage-notes
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.2/docs/resources/s3_bucket_logging#usage-notes
       logging,
 
-      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.1/docs/resources/s3_bucket_server_side_encryption_configuration#usage-notes
+      # https://registry.terraform.io/providers/hashicorp%20%20/aws/3.75.2/docs/resources/s3_bucket_server_side_encryption_configuration#usage-notes
       server_side_encryption_configuration,
     ]
   }
@@ -117,6 +128,13 @@ resource "aws_s3_bucket" "private_bucket" {
 resource "aws_s3_bucket_policy" "private_bucket" {
   bucket = aws_s3_bucket.private_bucket.id
   policy = data.aws_iam_policy_document.supplemental_policy.json
+}
+
+resource "aws_s3_bucket_accelerate_configuration" "private_bucket" {
+  count = var.transfer_acceleration != null ? 1 : 0
+
+  bucket = aws_s3_bucket.private_bucket.id
+  status = var.transfer_acceleration ? "Enabled" : "Suspended"
 }
 
 resource "aws_s3_bucket_acl" "private_bucket" {
@@ -240,7 +258,8 @@ resource "aws_s3_bucket_cors_configuration" "private_bucket" {
 }
 
 resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
-  count  = var.enable_analytics ? 1 : 0
+  count = var.enable_analytics ? 1 : 0
+
   bucket = aws_s3_bucket.private_bucket.bucket
   name   = "Analytics"
 
@@ -257,7 +276,8 @@ resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  count  = var.enable_s3_public_access_block ? 1 : 0
+  count = var.enable_s3_public_access_block ? 1 : 0
+
   bucket = aws_s3_bucket.private_bucket.id
 
   # Block new public ACLs and uploading public objects

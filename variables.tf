@@ -141,3 +141,9 @@ variable "bucket_key_enabled" {
   type        = bool
   default     = false
 }
+
+variable "transfer_acceleration" {
+  description = "Whether or not to enable bucket acceleration."
+  type        = bool
+  default     = null
+}
