@@ -147,3 +147,9 @@ variable "transfer_acceleration" {
   type        = bool
   default     = null
 }
+
+variable "additional_lifecycle_rules" {
+  description = "List of additional lifecycle rules to specify"
+  type        = list(any)
+  default     = []
+}

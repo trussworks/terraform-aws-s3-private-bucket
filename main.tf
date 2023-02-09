@@ -220,6 +220,26 @@ resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
       days = 30
     }
   }
+
+  dynamic "rule" {
+    for_each = var.additional_lifecycle_rules
+    content {
+      id     = rule.value["id"]
+      status = rule.value["status"]
+      dynamic "filter" {
+        for_each = rule.value.filter
+        content {
+          prefix = filter.value["prefix"]
+        }
+      }
+      dynamic "expiration" {
+        for_each = rule.value.expiration
+        content {
+          days = expiration.value["days"]
+        }
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_logging" "private_bucket" {
