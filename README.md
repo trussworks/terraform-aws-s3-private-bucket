@@ -88,6 +88,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | abort\_incomplete\_multipart\_upload\_days | Number of days until aborting incomplete multipart uploads | `number` | `14` | no |
+| additional\_lifecycle\_rules | List of additional lifecycle rules to specify | `list(any)` | `[]` | no |
 | bucket | The name of the bucket. | `string` | n/a | yes |
 | bucket\_key\_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `false` | no |
 | cors\_rules | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
