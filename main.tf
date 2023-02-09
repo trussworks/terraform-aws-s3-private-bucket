@@ -226,12 +226,17 @@ resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
     content {
       id     = rule.value["id"]
       status = rule.value["status"]
-      filter {
-        prefix = rule.value["prefix"]
+      dynamic "filter" {
+        for_each = rule.value.filter
+        content {
+          prefix = filter.value["prefix"]
+        }
       }
-
-      expiration {
-        days = rule.value["days"]
+      dynamic "expiration" {
+        for_each = rule.value.expiration
+        content {
+          days = expiration.value["days"]
+        }
       }
     }
   }
