@@ -44,7 +44,7 @@ module "aws-s3-bucket" {
 }
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -121,7 +121,7 @@ No modules.
 | bucket\_regional\_domain\_name | The bucket region-specific domain name. |
 | id | The name of the bucket. |
 | name | The Name of the bucket. Will be of format bucketprefix-bucketname. |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## Upgrade Paths
 
