@@ -252,6 +252,8 @@ resource "aws_s3_bucket_logging" "private_bucket" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "private_bucket" {
+  count = var.kms_master_key_id != null ? 1 : 0
+
   bucket = aws_s3_bucket.private_bucket.id
 
   rule {
