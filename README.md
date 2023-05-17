@@ -106,6 +106,7 @@ No modules.
 | noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
 | noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
 | object\_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
+| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | sse\_algorithm | The server-side encryption algorithm to use. Valid values are AES256 and aws:kms | `string` | `"AES256"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
