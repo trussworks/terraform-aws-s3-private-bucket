@@ -149,12 +149,7 @@ New variables:
 - `object_ownership`
 - `s3_bucket_acl`
 
-Using the module's default values will not create the
-`aws_s3_bucket_ownership_controls.private_bucket` or
-`aws_s3_bucket_acl.private_bucket` resources and will instead use the AWS
-defaults for the configurations managed by those resources.
-
-Steps for updating existing buckets managed by this module:
+Steps for updating **existing buckets** managed by this module:
 
 - Option 1: Use new AWS recommended defaults.
 
@@ -165,7 +160,7 @@ set the following input variable value:
 control_object_ownership = true
 ```
 
-This will disable S3 access control lists for the bucket and set object
+The above will disable S3 access control lists for the bucket and set object
 ownership to `BucketOwnerEnforced`.
 
 - Option 2: Preserve existing bucket configuration as-is.
