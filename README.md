@@ -129,6 +129,56 @@ No modules.
 
 ## Upgrade Paths
 
+### Upgrading from 4.x.x to 5.x.x
+
+Version 5.x.x updates the module to account for changes made by AWS in April
+2023 to the default security settings of new S3 buckets. With the new changes,
+AWS automatically enables S3 Block Public Access and disables S3 access control
+lists for new S3 buckets.
+
+Version 5.x.x of this module adds a new resource and three new variables. How to
+use the new variables will depend on your use case.
+
+New resource:
+
+- `aws_s3_bucket_ownership_controls.private_bucket`
+
+New variables:
+
+- `control_object_ownership`
+- `object_ownership`
+- `s3_bucket_acl`
+
+Using the module's default values will not create the
+`aws_s3_bucket_ownership_controls.private_bucket` or
+`aws_s3_bucket_acl.private_bucket` resources and will instead use the AWS
+defaults for the configurations managed by those resources.
+
+Steps for updating existing buckets managed by this module:
+
+- Option 1: Use new AWS recommended defaults.
+
+In order to update an existing bucket to use the new AWS recommended defaults,
+set the following input variable value:
+
+```text
+control_object_ownership = true
+```
+
+This will disable S3 access control lists for the bucket and set object
+ownership to `BucketOwnerEnforced`.
+
+- Option 2: Preserve existing bucket configuration as-is.
+
+To preserve an existing bucket's configuration as-is, set the following input
+variable values:
+
+```text
+control_object_ownership = true
+object_ownership         = "ObjectWriter"
+s3_bucket_acl            = "private"
+```
+
 ### Upgrading from 3.x.x to 4.x.x
 
 Version 4.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
