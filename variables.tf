@@ -157,17 +157,11 @@ variable "additional_lifecycle_rules" {
 variable "control_object_ownership" {
   description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "object_ownership" {
   description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter."
   type        = string
   default     = "BucketOwnerEnforced"
-}
-
-variable "s3_bucket_acl" {
-  description = "Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list."
-  default     = null
-  type        = string
 }

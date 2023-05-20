@@ -92,7 +92,7 @@ No modules.
 | additional\_lifecycle\_rules | List of additional lifecycle rules to specify | `list(any)` | `[]` | no |
 | bucket | The name of the bucket. | `string` | n/a | yes |
 | bucket\_key\_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `false` | no |
-| control\_object\_ownership | Whether to manage S3 Bucket Ownership Controls on this bucket. | `bool` | `false` | no |
+| control\_object\_ownership | Whether to manage S3 Bucket Ownership Controls on this bucket. | `bool` | `true` | no |
 | cors\_rules | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
 | enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
@@ -106,7 +106,6 @@ No modules.
 | noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
 | noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
 | object\_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
-| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | sse\_algorithm | The server-side encryption algorithm to use. Valid values are AES256 and aws:kms | `string` | `"AES256"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
@@ -136,7 +135,7 @@ Version 5.x.x updates the module to account for changes made by AWS in April
 AWS automatically enables S3 Block Public Access and disables S3 access control
 lists for new S3 buckets.
 
-Version 5.x.x of this module adds a new resource and three new variables. How to
+Version 5.x.x of this module adds a new resource and two new variables. How to
 use the new variables will depend on your use case.
 
 New resource:
@@ -147,32 +146,17 @@ New variables:
 
 - `control_object_ownership`
 - `object_ownership`
-- `s3_bucket_acl`
 
-Steps for updating **existing buckets** managed by this module:
+Steps for updating existing buckets managed by this module:
 
-- Option 1: Use new AWS recommended defaults.
+- **Option 1: Disable ACLs (recommended).** In order to update an existing
+  bucket to use the new AWS recommended defaults, use this module's default
+  values for the new input variables. Using those settings will disable S3
+  access control lists for the bucket and set object ownership to
+  `BucketOwnerEnforced`.
 
-In order to update an existing bucket to use the new AWS recommended defaults,
-set the following input variable value:
-
-```text
-control_object_ownership = true
-```
-
-The above will disable S3 access control lists for the bucket and set object
-ownership to `BucketOwnerEnforced`.
-
-- Option 2: Preserve existing bucket configuration as-is.
-
-To preserve an existing bucket's configuration as-is, set the following input
-variable values:
-
-```text
-control_object_ownership = true
-object_ownership         = "ObjectWriter"
-s3_bucket_acl            = "private"
-```
+- **Option 2: Continue using ACLs.** To continue using ACLs, set
+  `object_ownership` to `ObjectWriter` or `BucketOwnerPreferred`.
 
 ### Upgrading from 3.x.x to 4.x.x
 

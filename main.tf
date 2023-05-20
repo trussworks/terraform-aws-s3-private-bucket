@@ -138,15 +138,12 @@ resource "aws_s3_bucket_accelerate_configuration" "private_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "private_bucket" {
-  count      = var.s3_bucket_acl != null ? 1 : 0
   bucket     = aws_s3_bucket.private_bucket.id
-  acl        = var.s3_bucket_acl
+  acl        = "private"
   depends_on = [aws_s3_bucket_ownership_controls.private_bucket]
 }
 
 resource "aws_s3_bucket_ownership_controls" "private_bucket" {
-  count = var.control_object_ownership ? 1 : 0
-
   bucket = aws_s3_bucket.private_bucket.id
 
   rule {
