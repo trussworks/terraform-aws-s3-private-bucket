@@ -132,11 +132,9 @@ No modules.
 ### Upgrading from 4.x.x to 5.x.x
 
 Version 5.x.x updates the module to account for changes made by AWS in April
-2023 to the default security settings of new S3 buckets. With the new changes,
-AWS automatically enables S3 Block Public Access and disables S3 access control
-lists for new S3 buckets.
+2023 to the default security settings of new S3 buckets.
 
-Version 5.x.x of this module adds a new resource and two new variables. How to
+Version 5.x.x of this module adds the following resource and variables. How to
 use the new variables will depend on your use case.
 
 New resource:
@@ -147,6 +145,7 @@ New variables:
 
 - `control_object_ownership`
 - `object_ownership`
+- `s3_bucket_acl`
 
 Steps for updating existing buckets managed by this module:
 
@@ -158,6 +157,10 @@ Steps for updating existing buckets managed by this module:
 
 - **Option 2: Continue using ACLs.** To continue using ACLs, set
   `object_ownership` to `ObjectWriter` or `BucketOwnerPreferred`.
+
+See [Controlling ownership of objects and disabling ACLs for your
+bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html)
+for further details and migration considerations.
 
 ### Upgrading from 3.x.x to 4.x.x
 
