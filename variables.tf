@@ -165,3 +165,9 @@ variable "object_ownership" {
   type        = string
   default     = "BucketOwnerEnforced"
 }
+
+variable "s3_bucket_acl" {
+  description = "Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list."
+  default     = null
+  type        = string
+}

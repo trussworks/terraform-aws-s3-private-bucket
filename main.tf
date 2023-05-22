@@ -139,7 +139,7 @@ resource "aws_s3_bucket_accelerate_configuration" "private_bucket" {
 
 resource "aws_s3_bucket_acl" "private_bucket" {
   bucket     = aws_s3_bucket.private_bucket.id
-  acl        = "private"
+  acl        = var.s3_bucket_acl
   depends_on = [aws_s3_bucket_ownership_controls.private_bucket]
 }
 
