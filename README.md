@@ -99,12 +99,11 @@ No modules.
 | enable\_s3\_public\_access\_block | Bool for toggling whether the s3 public access block resource should be enabled. | `bool` | `true` | no |
 | expiration | expiration blocks | `list(any)` | ```[ { "expired_object_delete_marker": true } ]``` | no |
 | inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
-| kms\_master\_key\_id | The AWS KMS master key ID used for the SSE-KMS encryption. | `string` | `""` | no |
+| kms\_master\_key\_id | The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256. | `string` | `""` | no |
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
 | noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
 | noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
-| sse\_algorithm | The server-side encryption algorithm to use. Valid values are AES256 and aws:kms | `string` | `"AES256"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | transfer\_acceleration | Whether or not to enable bucket acceleration. | `bool` | `null` | no |
 | transitions | Current version transition blocks | `list(any)` | `[]` | no |
