@@ -149,11 +149,10 @@ New variables:
 
 Steps for updating existing buckets managed by this module:
 
-- **Option 1: Disable ACLs (recommended).** In order to update an existing
-  bucket to use the new AWS recommended defaults, use this module's default
-  values for the new input variables. Using those settings will disable S3
-  access control lists for the bucket and set object ownership to
-  `BucketOwnerEnforced`.
+- **Option 1: Disable ACLs.** In order to update an existing bucket to use the
+  new AWS recommended defaults, use this module's default values for the new
+  input variables. Using those settings will disable S3 access control lists for
+  the bucket and set object ownership to `BucketOwnerEnforced`.
 
 - **Option 2: Continue using ACLs.** To continue using ACLs, set
   `object_ownership` to `ObjectWriter` or `BucketOwnerPreferred`.
