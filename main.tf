@@ -145,6 +145,8 @@ resource "aws_s3_bucket_acl" "private_bucket" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "private_bucket" {
+  count = var.control_object_ownership ? 1 : 0
+
   bucket = aws_s3_bucket.private_bucket.id
 
   rule {
