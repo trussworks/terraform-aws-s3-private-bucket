@@ -128,7 +128,7 @@ No modules.
 
 ## Upgrade Paths
 
-### Upgrading from 4.x.x to 5.x.x
+### Upgrading from 5.x.x to 6.x.x
 
 Version 5.x.x updates the module to account for changes made by AWS in April
 2023 to the default security settings of new S3 buckets.
@@ -159,6 +159,13 @@ Steps for updating existing buckets managed by this module:
 See [Controlling ownership of objects and disabling ACLs for your
 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html)
 for further details and migration considerations.
+
+### Upgrading from 4.x.x to 5.x.x
+
+Removed variables:
+
+- `sse_algorithm`. If `kms_master_key_id` is not passed, the module will fall
+  back to AES256 for the bucket encryption configuration.
 
 ### Upgrading from 3.x.x to 4.x.x
 
