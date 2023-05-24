@@ -118,14 +118,8 @@ variable "noncurrent_version_expiration" {
   default     = 365
 }
 
-variable "sse_algorithm" {
-  description = "The server-side encryption algorithm to use. Valid values are AES256 and aws:kms"
-  type        = string
-  default     = "AES256"
-}
-
 variable "kms_master_key_id" {
-  description = "The AWS KMS master key ID used for the SSE-KMS encryption."
+  description = "The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256."
   type        = string
   default     = ""
 }
