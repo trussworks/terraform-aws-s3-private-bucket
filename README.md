@@ -130,10 +130,10 @@ No modules.
 
 ### Upgrading from 5.x.x to 6.x.x
 
-Version 5.x.x updates the module to account for changes made by AWS in April
+Version 6.x.x updates the module to account for changes made by AWS in April
 2023 to the default security settings of new S3 buckets.
 
-Version 5.x.x of this module adds the following resource and variables. How to
+Version 6.x.x of this module adds the following resource and variables. How to
 use the new variables will depend on your use case.
 
 New resource:
