@@ -138,8 +138,26 @@ resource "aws_s3_bucket_accelerate_configuration" "private_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "private_bucket" {
+  count      = var.s3_bucket_acl != null ? 1 : 0
+  bucket     = aws_s3_bucket.private_bucket.id
+  acl        = var.s3_bucket_acl
+  depends_on = [aws_s3_bucket_ownership_controls.private_bucket]
+}
+
+resource "aws_s3_bucket_ownership_controls" "private_bucket" {
+  count = var.control_object_ownership ? 1 : 0
+
   bucket = aws_s3_bucket.private_bucket.id
-  acl    = "private"
+
+  rule {
+    object_ownership = var.object_ownership
+  }
+
+  depends_on = [
+    aws_s3_bucket_policy.private_bucket,
+    aws_s3_bucket_public_access_block.public_access_block,
+    aws_s3_bucket.private_bucket
+  ]
 }
 
 resource "aws_s3_bucket_versioning" "private_bucket" {

@@ -74,6 +74,7 @@ No modules.
 | [aws_s3_bucket_inventory.inventory](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_inventory) | resource |
 | [aws_s3_bucket_lifecycle_configuration.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_logging.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
+| [aws_s3_bucket_ownership_controls.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
 | [aws_s3_bucket_policy.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.private_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
@@ -91,6 +92,7 @@ No modules.
 | additional\_lifecycle\_rules | List of additional lifecycle rules to specify | `list(any)` | `[]` | no |
 | bucket | The name of the bucket. | `string` | n/a | yes |
 | bucket\_key\_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `false` | no |
+| control\_object\_ownership | Whether to manage S3 Bucket Ownership Controls on this bucket. | `bool` | `true` | no |
 | cors\_rules | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
 | custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
 | enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
@@ -103,6 +105,8 @@ No modules.
 | logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
 | noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
 | noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
+| object\_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
+| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
 | schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | transfer\_acceleration | Whether or not to enable bucket acceleration. | `bool` | `null` | no |
@@ -123,6 +127,46 @@ No modules.
 <!-- END_TF_DOCS -->
 
 ## Upgrade Paths
+
+### Upgrading from 5.x.x to 6.x.x
+
+Version 5.x.x updates the module to account for changes made by AWS in April
+2023 to the default security settings of new S3 buckets.
+
+Version 5.x.x of this module adds the following resource and variables. How to
+use the new variables will depend on your use case.
+
+New resource:
+
+- `aws_s3_bucket_ownership_controls.private_bucket`
+
+New variables:
+
+- `control_object_ownership`
+- `object_ownership`
+- `s3_bucket_acl`
+
+Steps for updating existing buckets managed by this module:
+
+- **Option 1: Disable ACLs.** In order to update an existing bucket to use the
+  new AWS recommended defaults, use this module's default values for the new
+  input variables. Using those settings will disable S3 access control lists for
+  the bucket and set object ownership to `BucketOwnerEnforced`.
+
+- **Option 2: Continue using ACLs.** To continue using ACLs, set `s3_bucket_acl`
+  to `"private"` and `object_ownership` to `"ObjectWriter"` or
+  `"BucketOwnerPreferred"`.
+
+See [Controlling ownership of objects and disabling ACLs for your
+bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html)
+for further details and migration considerations.
+
+### Upgrading from 4.x.x to 5.x.x
+
+Removed variables:
+
+- `sse_algorithm`. If `kms_master_key_id` is not passed, the module will fall
+  back to AES256 for the bucket encryption configuration.
 
 ### Upgrading from 3.x.x to 4.x.x
 
