@@ -153,8 +153,9 @@ Steps for updating existing buckets managed by this module:
   input variables. Using those settings will disable S3 access control lists for
   the bucket and set object ownership to `BucketOwnerEnforced`.
 
-- **Option 2: Continue using ACLs.** To continue using ACLs, set
-  `object_ownership` to `ObjectWriter` or `BucketOwnerPreferred`.
+- **Option 2: Continue using ACLs.** To continue using ACLs, set `s3_bucket_acl`
+  to `"private"` and `object_ownership` to `"ObjectWriter"` or
+  `"BucketOwnerPreferred"`.
 
 See [Controlling ownership of objects and disabling ACLs for your
 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html)
