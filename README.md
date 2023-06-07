@@ -44,7 +44,7 @@ module "aws-s3-bucket" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13.0 |
+| terraform | >= 1.0 |
 | aws | >= 3.75.0 |
 
 ## Providers
