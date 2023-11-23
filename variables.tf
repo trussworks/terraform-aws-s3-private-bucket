@@ -11,7 +11,7 @@ variable "use_random_suffix" {
 
 variable "use_account_alias_prefix" {
   description = "Whether to prefix the bucket name with the AWS account alias."
-  type        = string
+  type        = bool
   default     = true
 }
 
