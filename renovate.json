@@ -1,7 +1,7 @@
 {
   "extends": [
     "config:base",
-    ":disableDependencyDashboard"
+    "helpers:pinGitHubActionDigests"
   ],
   "labels": [
     "dependencies"
@@ -33,7 +33,6 @@
       "managers": [
         "terraform",
         "pre-commit",
-        "dockerfile",
         "github-actions"
       ],
       "matchUpdateTypes": [
