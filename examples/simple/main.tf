@@ -30,5 +30,5 @@ module "s3_logs" {
   default_allow = false
   allow_s3      = true
 
-  s3_logs_prefix = ["s3/${module.s3_private_bucket.bucket}"]
+  s3_logs_prefix = ["s3/${var.test_name}"]
 }
