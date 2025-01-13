@@ -1,6 +1,6 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     "helpers:pinGitHubActionDigests"
   ],
   "labels": [
@@ -30,7 +30,7 @@
       "automerge": true,
       "description": "Group minor and patch updates into a single PR",
       "groupName": "dependencies",
-      "managers": [
+      "matchManagers": [
         "terraform",
         "pre-commit",
         "github-actions"
