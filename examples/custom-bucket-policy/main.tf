@@ -57,4 +57,7 @@ module "s3_logs" {
   s3_bucket_name = var.logging_bucket
 
   default_allow = false
+  allow_s3      = true
+
+  s3_logs_prefix = ["s3/${module.s3_private_bucket.bucket}"]
 }
