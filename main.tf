@@ -12,16 +12,7 @@ locals {
 }
 
 data "aws_iam_policy_document" "supplemental_policy" {
-  # This should be a single line:
-  # source_policy_documents = [var.custom_bucket_policy]
-  #
-  # However, there appears to be a bug that occurs when source_policy_documents is an empty string:
-  # - https://github.com/hashicorp/terraform-provider-aws/issues/22959
-  # - https://github.com/hashicorp/terraform-provider-aws/issues/24366
-  #
-  # To work around this, we're using this workaround. It should be replaced
-  # once the underlying issue is addressed.
-  source_policy_documents = length(var.custom_bucket_policy) > 0 ? [var.custom_bucket_policy] : null
+  source_policy_documents = [var.custom_bucket_policy]
 
   # Enforce SSL/TLS on all transmitted objects
   # We do this by extending the custom_bucket_policy
@@ -276,7 +267,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "private_bucket" {
 resource "aws_s3_bucket_cors_configuration" "private_bucket" {
   count = length(var.cors_rules)
 
-  bucket = aws_s3_bucket.private_bucket.bucket
+  bucket = aws_s3_bucket.private_bucket.id
 
   cors_rule {
     allowed_methods = var.cors_rules[count.index].allowed_methods
@@ -290,7 +281,7 @@ resource "aws_s3_bucket_cors_configuration" "private_bucket" {
 resource "aws_s3_bucket_analytics_configuration" "private_analytics_config" {
   count = var.enable_analytics ? 1 : 0
 
-  bucket = aws_s3_bucket.private_bucket.bucket
+  bucket = aws_s3_bucket.private_bucket.id
   name   = "Analytics"
 
   storage_class_analysis {

@@ -45,17 +45,13 @@ module "aws-s3-bucket" {
 | Name | Version |
 |------|---------|
 | terraform | >= 1.0 |
-| aws | >= 3.75.0 |
+| aws | >= 5.43.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.75.0 |
-
-## Modules
-
-No modules.
+| aws | >= 5.43.0 |
 
 ## Resources
 
@@ -83,40 +79,41 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| abort\_incomplete\_multipart\_upload\_days | Number of days until aborting incomplete multipart uploads | `number` | `14` | no |
-| additional\_lifecycle\_rules | List of additional lifecycle rules to specify | `list(any)` | `[]` | no |
 | bucket | The name of the bucket. | `string` | n/a | yes |
-| bucket\_key\_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `false` | no |
-| control\_object\_ownership | Whether to manage S3 Bucket Ownership Controls on this bucket. | `bool` | `true` | no |
-| cors\_rules | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
-| custom\_bucket\_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
-| enable\_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
-| enable\_bucket\_force\_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
-| enable\_bucket\_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
-| enable\_s3\_public\_access\_block | Bool for toggling whether the s3 public access block resource should be enabled. | `bool` | `true` | no |
+| abort_incomplete_multipart_upload_days | Number of days until aborting incomplete multipart uploads | `number` | `14` | no |
+| additional_lifecycle_rules | List of additional lifecycle rules to specify | `list(any)` | `[]` | no |
+| bucket_key_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `false` | no |
+| control_object_ownership | Whether to manage S3 Bucket Ownership Controls on this bucket. | `bool` | `true` | no |
+| cors_rules | List of maps containing rules for Cross-Origin Resource Sharing. | `list(any)` | `[]` | no |
+| custom_bucket_policy | JSON formatted bucket policy to attach to the bucket. | `string` | `""` | no |
+| enable_analytics | Enables storage class analytics on the bucket. | `bool` | `true` | no |
+| enable_bucket_force_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
+| enable_bucket_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
+| enable_s3_public_access_block | Bool for toggling whether the s3 public access block resource should be enabled. | `bool` | `true` | no |
 | expiration | expiration blocks | `list(any)` | ```[ { "expired_object_delete_marker": true } ]``` | no |
-| inventory\_bucket\_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
-| kms\_master\_key\_id | The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256. | `string` | `""` | no |
-| logging\_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
-| noncurrent\_version\_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
-| noncurrent\_version\_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
-| object\_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
-| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
-| schedule\_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
+| inventory_bucket_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
+| kms_master_key_id | The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256. | `string` | `""` | no |
+| logging_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
+| noncurrent_version_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
+| noncurrent_version_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
+| object_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
+| s3_bucket_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
+| schedule_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
-| transfer\_acceleration | Whether or not to enable bucket acceleration. | `bool` | `null` | no |
+| transfer_acceleration | Whether or not to enable bucket acceleration. | `bool` | `null` | no |
 | transitions | Current version transition blocks | `list(any)` | `[]` | no |
-| use\_account\_alias\_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
-| use\_random\_suffix | Whether to add a random suffix to the bucket name. | `bool` | `false` | no |
-| versioning\_status | A string that indicates the versioning status for the log bucket. | `string` | `"Enabled"` | no |
+| use_account_alias_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
+| use_random_suffix | Whether to add a random suffix to the bucket name. | `bool` | `false` | no |
+| versioning_status | A string that indicates the versioning status for the log bucket. | `string` | `"Enabled"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | arn | The ARN of the bucket. Will be of format arn:aws:s3:::bucketname. |
-| bucket\_domain\_name | The bucket domain name. |
-| bucket\_regional\_domain\_name | The bucket region-specific domain name. |
+| bucket_domain_name | The bucket domain name. |
+| bucket_logging_prefix | Prefix defined for logging to an S3 bucket. |
+| bucket_regional_domain_name | The bucket region-specific domain name. |
 | id | The name of the bucket. |
 | name | The Name of the bucket. Will be of format bucketprefix-bucketname. |
 <!-- END_TF_DOCS -->

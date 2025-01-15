@@ -22,3 +22,8 @@ output "bucket_regional_domain_name" {
   description = "The bucket region-specific domain name."
   value       = aws_s3_bucket.private_bucket.bucket_regional_domain_name
 }
+
+output "bucket_logging_prefix" {
+  description = "Prefix defined for logging to an S3 bucket."
+  value       = aws_s3_bucket_logging.private_bucket.target_prefix
+}
