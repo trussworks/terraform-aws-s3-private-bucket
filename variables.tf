@@ -150,12 +150,6 @@ variable "transfer_acceleration" {
   default     = null
 }
 
-# variable "transitions" {
-#   description = "Current version transition blocks"
-#   type        = list(any)
-#   default     = []
-# }
-
 variable "transition_default_minimum_object_size" {
   description = "Minimum object size to transition for lifecycle rule"
   type        = string
