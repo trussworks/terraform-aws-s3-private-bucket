@@ -80,8 +80,8 @@ variable "lifecycle_abort_incomplete_upload" {
   default = {
     expiration = {
       expired_object_delete_marker = true
-      days = null
-      date = null
+      days                         = null
+      date                         = null
     }
     # No transition block necessary by default
     transition = null
@@ -89,29 +89,29 @@ variable "lifecycle_abort_incomplete_upload" {
     # noncurrent_version_transition (nvt) block attributes
     nvt = {
       newer_noncurrent_versions = null
-      noncurrent_days = 30
-      storage_class = "STANDARD_IA"
+      noncurrent_days           = 30
+      storage_class             = "STANDARD_IA"
     }
-    
+
     # noncurrent_version_expiration (nve) block attributes
     # Number of days until non-current version of object expires
     nve = {
       newer_noncurrent_versions = null,
-      noncurrent_days = 365
+      noncurrent_days           = 365
     }
   }
 }
 
-variable lifecycle_aws_bucket_analytics_expiration {
+variable "lifecycle_aws_bucket_analytics_expiration" {
   description = "Number of days to keep aws bucket analytics objects"
-  type = number
-  default = 30
+  type        = number
+  default     = 30
 }
 
 variable "lifecycle_aws_bucket_inventory_expiration" {
   description = "Number of days unused items expire from AWS Inventory"
-  type = number
-  default = 14
+  type        = number
+  default     = 14
 }
 
 variable "logging_bucket" {
@@ -158,8 +158,8 @@ variable "transfer_acceleration" {
 
 variable "transition_default_minimum_object_size" {
   description = "Minimum object size to transition for lifecycle rule"
-  type = string
-  default = "all_storage_classes_128K"
+  type        = string
+  default     = "all_storage_classes_128K"
 }
 
 variable "use_account_alias_prefix" {
