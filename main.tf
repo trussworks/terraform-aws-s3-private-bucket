@@ -12,7 +12,7 @@ locals {
 
   # Detect aspects of default lifecycle rules
   aiu_has_expiration = var.lifecycle_abort_incomplete_upload.expiration != null ? true : false
-  aiu_has_transition = var.lifecycle_abort_incomplete_upload.transition != null ? false : true
+  aiu_has_transition = var.lifecycle_abort_incomplete_upload.transition != null ? true : false
   aiu_has_nvt        = var.lifecycle_abort_incomplete_upload.nvt != null ? true : false
   aiu_has_nve        = var.lifecycle_abort_incomplete_upload.nve != null ? true : false
 
