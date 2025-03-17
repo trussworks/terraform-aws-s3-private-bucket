@@ -9,6 +9,13 @@ locals {
   bucket_prefix         = var.use_account_alias_prefix ? format("%s-", data.aws_iam_account_alias.current[0].account_alias) : ""
   bucket_id             = "${local.bucket_prefix}${var.bucket}"
   enable_bucket_logging = var.logging_bucket != ""
+
+  # Detect aspects of default lifecycle rules
+  aiu_has_expiration = var.lifecycle_abort_incomplete_upload.expiration != null ? true : false
+  aiu_has_transition = var.lifecycle_abort_incomplete_upload.transition != null ? false : true
+  aiu_has_nvt = var.lifecycle_abort_incomplete_upload.nvt != null ? true : false
+  aiu_has_nve = var.lifecycle_abort_incomplete_upload.nve != null ? true : false
+
 }
 
 data "aws_iam_policy_document" "supplemental_policy" {
@@ -153,6 +160,7 @@ resource "aws_s3_bucket_versioning" "private_bucket" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
   bucket = aws_s3_bucket.private_bucket.id
+  transition_default_minimum_object_size = var.transition_default_minimum_object_size
 
   rule {
     id = "abort-incomplete-multipart-upload"
@@ -164,61 +172,65 @@ resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
     }
 
     dynamic "expiration" {
-      for_each = var.expiration
+      for_each = local.aiu_has_expiration == true ? [var.lifecycle_abort_incomplete_upload.expiration] : []
       content {
-        date = lookup(expiration.value, "date", null)
-        days = lookup(expiration.value, "days", 0)
-
-        expired_object_delete_marker = lookup(expiration.value, "expired_object_delete_marker", false)
+        date = expiration.value.date
+        days = expiration.value.days
+        expired_object_delete_marker = expiration.value.expired_object_delete_marker
       }
     }
 
     dynamic "transition" {
-      for_each = var.transitions
+      for_each = local.aiu_has_transition == true ? [var.lifecycle_abort_incomplete_upload.transition] : []
       content {
-        days          = transition.value.days
+        days = transition.value.days
         storage_class = transition.value.storage_class
       }
     }
 
     dynamic "noncurrent_version_transition" {
-      for_each = var.noncurrent_version_transitions
+      for_each = local.aiu_has_nvt == true ? [var.lifecycle_abort_incomplete_upload.nvt] : []
       content {
-        noncurrent_days = noncurrent_version_transition.value.days
-        storage_class   = noncurrent_version_transition.value.storage_class
+        newer_noncurrent_versions = noncurrent_version_transition.value.newer_noncurrent_versions
+        noncurrent_days = noncurrent_version_transition.value.noncurrent_days
+        storage_class = noncurrent_version_transition.value.storage_class
       }
     }
 
-    noncurrent_version_expiration {
-      noncurrent_days = var.noncurrent_version_expiration
+    dynamic "noncurrent_version_expiration" {
+      for_each = local.aiu_has_nve == true ? [var.lifecycle_abort_incomplete_upload.nve] : []
+      content {
+        newer_noncurrent_versions = noncurrent_version_expiration.value.newer_noncurrent_versions
+        noncurrent_days = noncurrent_version_expiration.value.noncurrent_days
+      }
     }
   }
 
   rule {
     id = "aws-bucket-inventory"
 
-    status = "Enabled"
+    status = var.enable_bucket_inventory ? "Enabled" : "Disabled"
 
     filter {
       prefix = "_AWSBucketInventory/"
     }
 
     expiration {
-      days = 14
+      days = var.lifecycle_aws_bucket_inventory_expiration
     }
   }
 
   rule {
     id = "aws-bucket-analytics"
 
-    status = "Enabled"
+    status = var.enable_analytics ? "Enabled" : "Disabled"
 
     filter {
       prefix = "_AWSBucketAnalytics/"
     }
 
     expiration {
-      days = 30
+      days = var.lifecycle_aws_bucket_analytics_expiration
     }
   }
 
