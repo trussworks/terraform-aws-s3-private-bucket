@@ -45,13 +45,13 @@ module "aws-s3-bucket" {
 | Name | Version |
 |------|---------|
 | terraform | >= 1.0 |
-| aws | >= 5.43.0 |
+| aws | >= 5.89.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 5.43.0 |
+| aws | >= 5.89.0 |
 
 ## Resources
 
@@ -90,19 +90,19 @@ module "aws-s3-bucket" {
 | enable_bucket_force_destroy | If set to true, Bucket will be emptied and destroyed when terraform destroy is run. | `bool` | `false` | no |
 | enable_bucket_inventory | If set to true, Bucket Inventory will be enabled. | `bool` | `false` | no |
 | enable_s3_public_access_block | Bool for toggling whether the s3 public access block resource should be enabled. | `bool` | `true` | no |
-| expiration | expiration blocks | `list(any)` | ```[ { "expired_object_delete_marker": true } ]``` | no |
 | inventory_bucket_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | kms_master_key_id | The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256. | `string` | `""` | no |
+| lifecycle_abort_incomplete_upload | Default values for the abort incomplete mutlipart uploads lifecycle rule | `map` | ```{ "expiration": { "date": null, "days": null, "expired_object_delete_marker": true }, "nve": { "newer_noncurrent_versions": null, "noncurrent_days": 365 }, "nvt": { "newer_noncurrent_versions": null, "noncurrent_days": 30, "storage_class": "STANDARD_IA" }, "transition": null }``` | no |
+| lifecycle_aws_bucket_analytics_expiration | Number of days to keep aws bucket analytics objects | `number` | `30` | no |
+| lifecycle_aws_bucket_inventory_expiration | Number of days unused items expire from AWS Inventory | `number` | `14` | no |
 | logging_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
-| noncurrent_version_expiration | Number of days until non-current version of object expires | `number` | `365` | no |
-| noncurrent_version_transitions | Non-current version transition blocks | `list(any)` | ```[ { "days": 30, "storage_class": "STANDARD_IA" } ]``` | no |
 | object_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
 | s3_bucket_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
 | schedule_frequency | The S3 bucket inventory frequency. Defaults to Weekly. Options are 'Weekly' or 'Daily'. | `string` | `"Weekly"` | no |
 | tags | A mapping of tags to assign to the bucket. | `map(string)` | `{}` | no |
 | transfer_acceleration | Whether or not to enable bucket acceleration. | `bool` | `null` | no |
-| transitions | Current version transition blocks | `list(any)` | `[]` | no |
-| use_account_alias_prefix | Whether to prefix the bucket name with the AWS account alias. | `string` | `true` | no |
+| transition_default_minimum_object_size | Minimum object size to transition for lifecycle rule | `string` | `"all_storage_classes_128K"` | no |
+| use_account_alias_prefix | Whether to prefix the bucket name with the AWS account alias. | `bool` | `true` | no |
 | use_random_suffix | Whether to add a random suffix to the bucket name. | `bool` | `false` | no |
 | versioning_status | A string that indicates the versioning status for the log bucket. | `string` | `"Enabled"` | no |
 
