@@ -92,7 +92,7 @@ module "aws-s3-bucket" {
 | enable_s3_public_access_block | Bool for toggling whether the s3 public access block resource should be enabled. | `bool` | `true` | no |
 | inventory_bucket_format | The format for the inventory file. Default is ORC. Options are ORC or CSV. | `string` | `"ORC"` | no |
 | kms_master_key_id | The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256. | `string` | `""` | no |
-| lifecycle_abort_incomplete_upload | Default values for the abort incomplete mutlipart uploads lifecycle rule | `map` | ```{ "expiration": { "date": null, "days": null, "expired_object_delete_marker": true }, "nve": { "newer_noncurrent_versions": null, "noncurrent_days": 365 }, "nvt": { "newer_noncurrent_versions": null, "noncurrent_days": 30, "storage_class": "STANDARD_IA" }, "transition": null }``` | no |
+| lifecycle_abort_incomplete_upload | Default values for the abort incomplete mutlipart uploads lifecycle rule, including noncurrent_version_transition (nvt) and noncurrent_version_expiration (nve) | `map` | ```{ "expiration": { "date": null, "days": null, "expired_object_delete_marker": true }, "nve": { "newer_noncurrent_versions": null, "noncurrent_days": 365 }, "nvt": { "newer_noncurrent_versions": null, "noncurrent_days": 30, "storage_class": "STANDARD_IA" }, "transition": null }``` | no |
 | lifecycle_aws_bucket_analytics_expiration | Number of days to keep aws bucket analytics objects | `number` | `30` | no |
 | lifecycle_aws_bucket_inventory_expiration | Number of days unused items expire from AWS Inventory | `number` | `14` | no |
 | logging_bucket | The S3 bucket to send S3 access logs. | `string` | `""` | no |
