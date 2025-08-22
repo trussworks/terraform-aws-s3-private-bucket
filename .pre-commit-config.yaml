@@ -22,7 +22,7 @@ repos:
   - repo: https://github.com/terraform-docs/terraform-docs
     rev: "v0.19.0"
     hooks:
-      - id: terraform-docs-system
+      - id: terraform-docs-go
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.96.3
