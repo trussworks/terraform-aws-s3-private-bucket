@@ -242,11 +242,46 @@ resource "aws_s3_bucket_lifecycle_configuration" "private_bucket" {
       id     = rule.value["id"]
       status = rule.value["status"]
       dynamic "filter" {
-        for_each = rule.value.filter
+        for_each = length(try(flatten([rule.value.filter]), [])) == 0 ? [true] : []
+
         content {
-          prefix = filter.value["prefix"]
         }
       }
+
+      # Max 1 block - filter - with one key argument or a single tag
+      dynamic "filter" {
+        for_each = [for v in try(flatten([rule.value.filter]), []) : v if max(length(keys(v)), length(try(rule.value.filter.tags, []))) == 1]
+
+        content {
+          object_size_greater_than = try(filter.value.object_size_greater_than, null)
+          object_size_less_than    = try(filter.value.object_size_less_than, null)
+          prefix                   = try(filter.value.prefix, null)
+
+          dynamic "tag" {
+            for_each = try(filter.value.tags, [])
+
+            content {
+              key   = tag.key
+              value = tag.value
+            }
+          }
+        }
+      }
+
+      # Max 1 block - filter - with more than one key arguments or multiple tags
+      dynamic "filter" {
+        for_each = [for v in try(flatten([rule.value.filter]), []) : v if max(length(keys(v)), length(try(rule.value.filter.tags, []))) > 1]
+
+        content {
+          and {
+            object_size_greater_than = try(filter.value.object_size_greater_than, null)
+            object_size_less_than    = try(filter.value.object_size_less_than, null)
+            prefix                   = try(filter.value.prefix, null)
+            tags                     = try(filter.value.tags, null)
+          }
+        }
+      }
+
       dynamic "expiration" {
         for_each = rule.value.expiration
         content {
